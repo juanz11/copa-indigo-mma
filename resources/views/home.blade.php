@@ -876,6 +876,7 @@
                         <option value="">Selecciona un método</option>
                         <option value="transferencia">Transferencia Bancaria</option>
                         <option value="pago_movil">Pago Móvil</option>
+                        <option value="fundacion">Fundación David Brandt (Pago Móvil)</option>
                         <option value="zelle">Zelle</option>
                         <option value="paypal">PayPal</option>
                         <option value="efectivo">Efectivo</option>
@@ -984,6 +985,11 @@
             html = `<strong>Banco:</strong> ${data.bank}<br>` +
                    `<strong>Teléfono:</strong> ${data.phone}<br>` +
                    `<strong>Cédula:</strong> ${data.id}`;
+        } else if (method === 'fundacion') {
+            html = `<strong>Titular:</strong> ${data.holder}<br>` +
+                   `<strong>Banco:</strong> ${data.bank}<br>` +
+                   `<strong>Teléfono:</strong> ${data.phone}<br>` +
+                   `<strong>RIF:</strong> ${data.id}`;
         } else if (method === 'zelle') {
             html = `<strong>Correo:</strong> ${data.email}<br>` +
                    `<strong>Titular:</strong> ${data.name}`;

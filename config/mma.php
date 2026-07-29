@@ -9,17 +9,24 @@ return [
 
     'payments' => [
         'transferencia' => [
-            'label' => 'Transferencia Bancaria',
-            'bank'  => env('PAYMENT_TRANSFER_BANK', 'Banco de Venezuela'),
-            'holder' => env('PAYMENT_TRANSFER_HOLDER', 'Julio Brandt'),
-            'account' => env('PAYMENT_TRANSFER_ACCOUNT', 'xxxx-xxxx-xxxx-xxxx'),
-            'id'      => env('PAYMENT_TRANSFER_ID', 'V-12345678'),
+            'label'   => 'Transferencia Bancaria',
+            'bank'    => env('PAYMENT_TRANSFER_BANK', '0105 - Mercantil C.A Banco Universal'),
+            'holder'  => env('PAYMENT_TRANSFER_HOLDER', 'FUNDACION DAVID BRANDT LASABALLET'),
+            'account' => env('PAYMENT_TRANSFER_ACCOUNT', '01050120211120303036'),
+            'id'      => env('PAYMENT_TRANSFER_ID', 'J-50709884-2'),
         ],
         'pago_movil' => [
             'label' => 'Pago Móvil',
             'bank'  => env('PAYMENT_PM_BANK', '0102 - Banco de Venezuela'),
             'phone' => env('PAYMENT_PM_PHONE', '0412-1234567'),
             'id'    => env('PAYMENT_PM_ID', 'V-12345678'),
+        ],
+        'fundacion' => [
+            'label'  => 'Pago Móvil — Fundación David Brandt',
+            'holder' => env('PAYMENT_FUNDACION_HOLDER', 'FUNDACION DAVID BRANDT LASABALLET'),
+            'bank'   => env('PAYMENT_FUNDACION_BANK', '0105 - Mercantil C.A Banco Universal'),
+            'phone'  => env('PAYMENT_FUNDACION_PHONE', '0414-4008240'),
+            'id'     => env('PAYMENT_FUNDACION_ID', 'J-50709884-2'),
         ],
         'zelle' => [
             'label' => 'Zelle',
