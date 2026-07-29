@@ -15,15 +15,25 @@
         padding: 6rem 2rem 4rem;
         position: relative;
         overflow: hidden;
-        background: radial-gradient(ellipse at top, #001a4d 0%, #0a0a0a 60%);
+        background: #000;
+    }
+    .hero-bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('/IMG_0942.PNG');
+        background-size: cover;
+        background-position: center top;
+        opacity: 0.55;
+        z-index: 0;
     }
     .hero::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230066FF' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 0.4;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.65) 60%, rgba(10,10,10,1) 100%);
+        z-index: 1;
     }
+    .hero > * { position: relative; z-index: 2; }
     .hero-badge {
         display: inline-flex;
         align-items: center;
@@ -135,6 +145,28 @@
         max-width: 700px;
     }
 
+    /* Event info grid + flyer */
+    .evento-layout {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 3rem;
+        align-items: start;
+    }
+    @media (max-width: 900px) {
+        .evento-layout { grid-template-columns: 1fr; }
+        .evento-flyer { display: none; }
+    }
+    .evento-flyer {
+        width: 220px;
+        flex-shrink: 0;
+    }
+    .evento-flyer img {
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+        box-shadow: 0 16px 50px rgba(0,0,0,0.5), 0 0 30px rgba(0,102,255,0.2);
+        border: 1px solid rgba(212,175,55,0.2);
+    }
     /* Event info grid */
     .event-grid {
         display: grid;
@@ -172,37 +204,75 @@
         border-bottom: 1px solid rgba(212,175,55,0.1);
     }
     .legacy-inner {
-        max-width: 900px;
+        max-width: 1100px;
         margin: 0 auto;
-        text-align: center;
         padding: 5rem 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
     }
-    .legacy-inner blockquote {
-        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    @media (max-width: 768px) {
+        .legacy-inner { grid-template-columns: 1fr; gap: 2rem; }
+        .legacy-flyer { order: -1; }
+    }
+    .legacy-flyer {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(212,175,55,0.15);
+        border: 1px solid rgba(212,175,55,0.2);
+    }
+    .legacy-flyer img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    .legacy-content { text-align: left; }
+    .legacy-content blockquote {
+        font-size: clamp(1rem, 2.5vw, 1.35rem);
         font-style: italic;
         color: var(--text);
         line-height: 1.7;
         position: relative;
-        padding: 0 2rem;
-    }
-    .legacy-inner blockquote::before {
-        content: '"';
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 6rem;
-        color: var(--gold);
-        opacity: 0.3;
-        position: absolute;
-        top: -2rem; left: 0;
-        line-height: 1;
+        padding: 0 0 0 2rem;
+        border-left: 3px solid var(--gold);
+        margin-bottom: 1.5rem;
     }
     .legacy-name {
-        margin-top: 1.5rem;
         font-family: 'Bebas Neue', sans-serif;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         letter-spacing: 3px;
         color: var(--gold);
+        margin-top: 1rem;
     }
     .legacy-sub { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem; }
+
+    /* ===== GALLERY ===== */
+    .gallery-section { background: var(--dark); padding: 5rem 2rem; }
+    .gallery-inner { max-width: 1100px; margin: 0 auto; }
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 2.5rem;
+    }
+    @media (max-width: 768px) {
+        .gallery-grid { grid-template-columns: 1fr; }
+    }
+    .gallery-item {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
+        transition: transform 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+    }
+    .gallery-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(212,175,55,0.2);
+        border-color: rgba(212,175,55,0.3);
+    }
+    .gallery-item img { width: 100%; height: auto; display: block; }
+    .gallery-item.tall { grid-row: span 2; }
 
     /* ===== TICKETS ===== */
     .tickets-section { background: var(--dark-2); }
@@ -522,6 +592,7 @@
 
 <!-- HERO -->
 <section class="hero" id="inicio">
+    <div class="hero-bg"></div>
     <div class="hero-badge">🥊 1era Edición · Valencia, Venezuela</div>
     <h1>COPA <span class="accent">ÍNDIGO</span><br>MMA</h1>
     <p class="hero-subtitle">Acción · Técnica · Legado</p>
@@ -546,37 +617,45 @@
     <div class="sponsors-list">
         <a href="https://instagram.com/julio_brandt" target="_blank">🔹 @julio_brandt — Fundador y Promotor</a>
         <a href="https://instagram.com/sncpharma" target="_blank">🔹 @sncpharma — Patrocinador Exclusivo</a>
+        <a href="https://www.youtube.com/@copaindigomma" target="_blank" style="color:#ff4444;font-weight:700;"><i class="fab fa-youtube"></i> @copaindigomma — Canal Oficial YouTube</a>
     </div>
 </div>
 
 <!-- EL EVENTO -->
 <section class="section" id="evento">
     <div class="section-inner">
-        <p class="section-tag">⚡ El Evento</p>
-        <h2 class="section-title">Un evento. Un propósito.<br><span class="accent">Un legado.</span></h2>
-        <p class="section-text">
-            Más que una cartelera de combates, hemos diseñado un gran evento pensado para que los verdaderos fanáticos de las MMA disfruten de un show sin precedentes. Celebraremos este deporte tal como él lo vivía: <strong>dándolo todo hasta el último segundo.</strong>
-        </p>
-        <div class="event-grid">
-            <div class="event-card">
-                <div class="event-card-icon">📅</div>
-                <h3>Fecha</h3>
-                <p><strong>Sábado, 24 de Octubre</strong><br>Apertura: 8:00 P.M.</p>
+        <div class="evento-layout">
+            <div>
+                <p class="section-tag">⚡ El Evento</p>
+                <h2 class="section-title">Un evento. Un propósito.<br><span class="accent">Un legado.</span></h2>
+                <p class="section-text">
+                    Más que una cartelera de combates, hemos diseñado un gran evento pensado para que los verdaderos fanáticos de las MMA disfruten de un show sin precedentes. Celebraremos este deporte tal como él lo vivía: <strong>dándolo todo hasta el último segundo.</strong>
+                </p>
+                <div class="event-grid">
+                    <div class="event-card">
+                        <div class="event-card-icon">📅</div>
+                        <h3>Fecha</h3>
+                        <p><strong>Sábado, 24 de Octubre</strong><br>Apertura: 8:00 P.M.</p>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-card-icon">📍</div>
+                        <h3>Locación</h3>
+                        <p><strong>Hotel Hesperia Valencia</strong><br>@wtchesperiavalencia — Valencia, Venezuela</p>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-card-icon">🥊</div>
+                        <h3>El Show</h3>
+                        <p>Cartelera de combates MMA de alto nivel, entretenimiento y una noche histórica para las artes marciales mixtas.</p>
+                    </div>
+                    <div class="event-card">
+                        <div class="event-card-icon">💙</div>
+                        <h3>El Propósito</h3>
+                        <p>Rendir homenaje a <strong>David Brandt — El Índigo</strong>, un guerrero que lo dio todo dentro y fuera del octágono.</p>
+                    </div>
+                </div>
             </div>
-            <div class="event-card">
-                <div class="event-card-icon">📍</div>
-                <h3>Locación</h3>
-                <p><strong>Hotel Hesperia Valencia</strong><br>@wtchesperiavalencia — Valencia, Venezuela</p>
-            </div>
-            <div class="event-card">
-                <div class="event-card-icon">🥊</div>
-                <h3>El Show</h3>
-                <p>Cartelera de combates MMA de alto nivel, entretenimiento y una noche histórica para las artes marciales mixtas.</p>
-            </div>
-            <div class="event-card">
-                <div class="event-card-icon">💙</div>
-                <h3>El Propósito</h3>
-                <p>Rendir homenaje a <strong>David Brandt — El Índigo</strong>, un guerrero que lo dio todo dentro y fuera del octágono.</p>
+            <div class="evento-flyer">
+                <img src="/IMG_1053.PNG" alt="Copa Índigo MMA — Flyer Oficial">
             </div>
         </div>
     </div>
@@ -585,17 +664,53 @@
 <!-- LEGACY -->
 <section class="legacy-section">
     <div class="legacy-inner">
-        <p class="section-tag" style="text-align:center;">💙 En su memoria</p>
-        <blockquote>
-            Más que un luchador, fue un guerrero que vivió las MMA con el alma. Este evento es para él, por él y gracias a todo lo que nos enseñó dentro del octágono.
-        </blockquote>
-        <p class="legacy-name">DAVID BRANDT</p>
-        <p class="legacy-sub">El Índigo · Siempre en nuestros corazones 🕊️</p>
-        <div style="margin-top:2rem; display:flex; justify-content:center; gap:1rem; flex-wrap:wrap;">
-            <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#CopaÍndigoMMA</span>
-            <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#DavidBrandt</span>
-            <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#FundaciónDavidBrandt</span>
-            <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#SNCPHARMA</span>
+        <div class="legacy-flyer">
+            <img src="/IMG_1185.PNG" alt="Flyer Copa Índigo MMA — David Brandt">
+        </div>
+        <div class="legacy-content">
+            <p class="section-tag">💙 En su memoria</p>
+            <h2 class="section-title" style="margin-bottom:1.5rem;">Un homenaje que<br><span class="accent">trasciende el deporte.</span></h2>
+            <blockquote>
+                Más que un luchador, fue un guerrero que vivió las MMA con el alma. Este evento es para él, por él y gracias a todo lo que nos enseñó dentro del octágono.
+            </blockquote>
+            <p class="legacy-name">DAVID BRANDT</p>
+            <p class="legacy-sub">El Índigo · Siempre en nuestros corazones 🕊️</p>
+            <div style="margin-top:2rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#CopaÍndigoMMA</span>
+                <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#DavidBrandt</span>
+                <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#FundaciónDavidBrandt</span>
+                <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#SNCPHARMA</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GALERÍA -->
+<section class="gallery-section" id="galeria">
+    <div class="gallery-inner">
+        <div class="section-inner" style="padding:0;margin:0;max-width:100%;">
+            <p class="section-tag">📸 Identidad Visual</p>
+            <h2 class="section-title">El arte detrás del<br><span class="accent">evento.</span></h2>
+        </div>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="/IMG_0941.PNG" alt="Copa Índigo MMA Banner">
+            </div>
+            <div class="gallery-item">
+                <img src="/IMG_0942.PNG" alt="Copa Índigo MMA Arena">
+            </div>
+            <div class="gallery-item">
+                <img src="/IMG_0939.PNG" alt="Copa Índigo MMA Octágono">
+            </div>
+            <div class="gallery-item">
+                <img src="/IMG_0955.PNG" alt="Copa Índigo MMA David Brandt">
+            </div>
+            <div class="gallery-item">
+                <img src="/IMG_0940.PNG" alt="Copa Índigo MMA Luces">
+            </div>
+            <div class="gallery-item" style="display:flex;align-items:center;justify-content:center;background:var(--dark-3);border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:2rem;">
+                <img src="/IMG_0292.PNG" alt="Copa Índigo MMA Logo" style="max-height:220px;width:auto;filter:drop-shadow(0 0 20px rgba(212,175,55,0.4));">
+            </div>
         </div>
     </div>
 </section>
@@ -676,6 +791,12 @@
                 <h3>Instagram</h3>
                 <a href="https://instagram.com/julio_brandt" target="_blank">@julio_brandt</a>
                 <a href="https://instagram.com/sncpharma" target="_blank">@sncpharma</a>
+            </div>
+            <div class="contact-card">
+                <i class="fab fa-youtube" style="color:#ff4444;"></i>
+                <h3>YouTube</h3>
+                <a href="https://www.youtube.com/@copaindigomma" target="_blank">@copaindigomma</a>
+                <p style="font-size:0.8rem;margin-top:0.3rem;">Suscríbete al canal oficial</p>
             </div>
             <div class="contact-card">
                 <i class="fas fa-map-marker-alt"></i>
@@ -762,6 +883,11 @@
                     </select>
                 </div>
 
+                <div id="payment-details-box" style="display:none;background:var(--dark-3);border:1px solid rgba(212,175,55,0.15);border-radius:8px;padding:1rem;margin-bottom:1.25rem;font-size:0.9rem;line-height:1.6;">
+                    <strong style="color:var(--gold);display:block;margin-bottom:0.5rem;"><i class="fas fa-info-circle"></i> Datos para completar tu pago</strong>
+                    <div id="payment-details-content" style="color:var(--text);"></div>
+                </div>
+
                 <div class="form-group" id="reference-group">
                     <label>Número de Referencia *</label>
                     <input type="text" name="payment_reference" id="payment_reference" placeholder="Ingresa el número de referencia" required>
@@ -798,10 +924,15 @@
 <script>
     const PRICES = { general: 30, vip: 60, ringside: 100 };
     const LABELS = { general: 'Entrada General — $30 USD', vip: 'Entrada VIP — $60 USD', ringside: 'Entrada Ringside — $100 USD' };
+    const isLoggedIn = @json(auth()->check());
 
     let currentType = 'general';
 
     function openModal(type) {
+        if (!isLoggedIn) {
+            window.location.href = '{{ route('register') }}';
+            return;
+        }
         currentType = type;
         document.getElementById('ticket_type').value = type;
         document.getElementById('modalTicketLabel').textContent = LABELS[type];
@@ -830,7 +961,41 @@
 
     document.getElementById('quantity').addEventListener('input', updateTotal);
 
-    // Show/hide reference field based on payment method
+    const paymentDetails = @json(config('mma.payments'));
+
+    function renderPaymentDetails(method) {
+        const box = document.getElementById('payment-details-box');
+        const content = document.getElementById('payment-details-content');
+        const data = paymentDetails[method];
+
+        if (!data) {
+            box.style.display = 'none';
+            content.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+        if (method === 'transferencia') {
+            html = `<strong>Banco:</strong> ${data.bank}<br>` +
+                   `<strong>Titular:</strong> ${data.holder}<br>` +
+                   `<strong>Cuenta:</strong> ${data.account}<br>` +
+                   `<strong>Cédula:</strong> ${data.id}`;
+        } else if (method === 'pago_movil') {
+            html = `<strong>Banco:</strong> ${data.bank}<br>` +
+                   `<strong>Teléfono:</strong> ${data.phone}<br>` +
+                   `<strong>Cédula:</strong> ${data.id}`;
+        } else if (method === 'zelle') {
+            html = `<strong>Correo:</strong> ${data.email}<br>` +
+                   `<strong>Titular:</strong> ${data.name}`;
+        } else if (method === 'paypal') {
+            html = `<strong>Correo PayPal:</strong> ${data.email}`;
+        }
+
+        content.innerHTML = html;
+        box.style.display = 'block';
+    }
+
+    // Show/hide reference field and payment details based on payment method
     document.getElementById('payment_method').addEventListener('change', function () {
         const ref = document.getElementById('payment_reference');
         const group = document.getElementById('reference-group');
@@ -841,6 +1006,7 @@
             ref.required = true;
             group.style.opacity = '1';
         }
+        renderPaymentDetails(this.value);
     });
 
     // Close on overlay click

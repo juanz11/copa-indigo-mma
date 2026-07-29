@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\MmaRegistration;
+use App\Models\WhatsappNotification;
+use App\Services\WhatsappMessageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MmaRegistrationController extends Controller
 {
@@ -43,6 +46,7 @@ class MmaRegistrationController extends Controller
             }
 
             $registration = MmaRegistration::create([
+                'user_id'           => auth()->id(),
                 'full_name'         => $validated['full_name'],
                 'id_number'         => $validated['id_number'],
                 'phone'             => $validated['phone'],
@@ -56,6 +60,30 @@ class MmaRegistrationController extends Controller
                 'payment_proof'     => $paymentProofPath,
                 'status'            => 'pending',
             ]);
+
+            // Log del pago
+            Log::channel('daily')->info('Nuevo registro de pago — Copa Índigo MMA', [
+                'user_id'    => auth()->id(),
+                'email'      => auth()->user()?->email,
+                'registro_id'=> $registration->id,
+                'nombre'     => $registration->full_name,
+                'cedula'     => $registration->id_number,
+                'telefono'   => $registration->phone,
+                'entrada'    => $registration->ticket_type,
+                'cantidad'   => $registration->quantity,
+                'total'      => $registration->total_amount,
+                'metodo'     => $registration->payment_method,
+                'referencia' => $registration->payment_reference,
+            ]);
+
+            // Guardar notificación para el admin (no se envía automáticamente, queda pendiente)
+            if (config('mma.whatsapp.notify_admin_on_register')) {
+                WhatsappMessageService::logNotification(
+                    $registration,
+                    WhatsappMessageService::messageForAdmin($registration),
+                    'admin'
+                );
+            }
 
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
@@ -84,7 +112,7 @@ class MmaRegistrationController extends Controller
 
     public function adminIndex()
     {
-        $registrations = MmaRegistration::with('approver')
+        $registrations = MmaRegistration::with(['approver', 'whatsappNotifications'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -113,13 +141,37 @@ class MmaRegistrationController extends Controller
             'approved_by' => $validated['status'] === 'approved' ? auth()->id() : null,
         ]);
 
+        // Guardar notificación de WhatsApp para el cliente (se envía manualmente desde el admin)
+        WhatsappMessageService::logNotification(
+            $registration,
+            WhatsappMessageService::messageForClient($registration, $validated['status'])
+        );
+
         $statusText = $validated['status'] === 'approved' ? 'aprobado' : 'rechazado';
-        return back()->with('success', "Registro {$statusText} exitosamente.");
+        return back()->with('success', "Registro {$statusText} y notificación de WhatsApp guardada. Abre el panel para enviarla.");
     }
 
     public function destroy(MmaRegistration $registration)
     {
         $registration->delete();
         return back()->with('success', 'Registro eliminado exitosamente.');
+    }
+
+    public function whatsappLink(WhatsappNotification $notification)
+    {
+        $link = WhatsappMessageService::waLink($notification->phone, $notification->message);
+        return redirect()->away($link);
+    }
+
+    public function markWhatsappSent(WhatsappNotification $notification)
+    {
+        WhatsappMessageService::markAsSent($notification);
+        return back()->with('success', 'Notificación de WhatsApp marcada como enviada.');
+    }
+
+    public function markWhatsappFailed(WhatsappNotification $notification)
+    {
+        WhatsappMessageService::markAsFailed($notification, 'No se pudo abrir WhatsApp en el equipo. Queda guardada para reintentar.');
+        return back()->with('info', 'Notificación guardada como fallida. Puedes reintentar cuando tengas WhatsApp disponible.');
     }
 }

@@ -12,6 +12,7 @@ class MmaRegistration extends Model
     protected $table = 'mma_registrations';
 
     protected $fillable = [
+        'user_id',
         'full_name',
         'id_number',
         'phone',
@@ -33,9 +34,19 @@ class MmaRegistration extends Model
         'approved_at' => 'datetime',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function whatsappNotifications()
+    {
+        return $this->hasMany(WhatsappNotification::class, 'mma_registration_id')->latest();
     }
 
     public function scopePending($query)

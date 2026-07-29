@@ -56,6 +56,7 @@
                         <th>Método Pago</th>
                         <th>Referencia</th>
                         <th>Estado</th>
+                        <th>WhatsApp</th>
                         <th>Fecha</th>
                         <th>Acciones</th>
                     </tr>
@@ -87,6 +88,29 @@
                                 <span class="badge badge-pending">Pendiente</span>
                             @else
                                 <span class="badge badge-rejected">Rechazado</span>
+                            @endif
+                        </td>
+                        <td>
+                            @php $notif = $reg->whatsappNotifications->first(); @endphp
+                            @if($notif)
+                                @if($notif->status === 'sent')
+                                    <span class="badge" style="background:rgba(37,211,102,0.15);color:#25d366;"><i class="fab fa-whatsapp"></i> Enviado</span>
+                                @elseif($notif->status === 'failed')
+                                    <span class="badge" style="background:rgba(231,74,59,0.15);color:#e74a3b;"><i class="fab fa-whatsapp"></i> Fallido</span>
+                                    <a href="{{ route('admin.whatsapp.link', $notif) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;margin-top:0.3rem;" title="Reintentar"><i class="fab fa-whatsapp"></i></a>
+                                @else
+                                    <div class="action-btns" style="gap:0.25rem;justify-content:flex-start;">
+                                        <a href="{{ route('admin.whatsapp.link', $notif) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;" title="Abrir WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                                        <form method="POST" action="{{ route('admin.whatsapp.sent', $notif) }}" style="display:inline;">@csrf @method('PATCH')
+                                            <button type="submit" class="btn-action" style="background:#1cc88a;color:#fff;" title="Marcar enviado"><i class="fas fa-check"></i></button>
+                                        </form>
+                                        <form method="POST" action="{{ route('admin.whatsapp.failed', $notif) }}" style="display:inline;">@csrf @method('PATCH')
+                                            <button type="submit" class="btn-action" style="background:#e74a3b;color:#fff;" title="No pude enviar (guardar)"><i class="fas fa-times"></i></button>
+                                        </form>
+                                    </div>
+                                @endif
+                            @else
+                                <span style="color:#555;font-size:0.8rem;">—</span>
                             @endif
                         </td>
                         <td style="color:#555;font-size:0.8rem;">{{ $reg->created_at->format('d/m/Y H:i') }}</td>

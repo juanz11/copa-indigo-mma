@@ -47,12 +47,39 @@
             height: 64px;
         }
         .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+        }
+        .nav-brand-img {
+            height: 44px;
+            width: auto;
+            filter: drop-shadow(0 0 8px rgba(212,175,55,0.5));
+            transition: filter 0.3s;
+        }
+        .nav-brand:hover .nav-brand-img {
+            filter: drop-shadow(0 0 14px rgba(212,175,55,0.9));
+        }
+        .nav-brand-text {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             letter-spacing: 2px;
             color: var(--gold);
+            line-height: 1;
         }
-        .nav-brand span { color: #fff; }
+        .nav-brand-text span { color: #fff; }
+        .nav-yt {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: #ff4444 !important;
+            font-weight: 700 !important;
+            font-size: 0.875rem;
+            transition: color 0.2s, text-shadow 0.2s !important;
+        }
+        .nav-yt:hover { color: #ff2222 !important; text-shadow: 0 0 10px rgba(255,68,68,0.5); }
+        .nav-yt i { font-size: 1.1rem; }
         .nav-links { display: flex; gap: 2rem; align-items: center; }
         .nav-links a {
             font-size: 0.875rem;
@@ -80,12 +107,23 @@
             padding: 3rem 2rem 2rem;
             text-align: center;
         }
+        .footer-logo-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .footer-logo-img {
+            height: 80px;
+            width: auto;
+            filter: drop-shadow(0 0 12px rgba(212,175,55,0.4));
+        }
         footer .footer-logo {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 2rem;
             color: var(--gold);
             letter-spacing: 3px;
-            margin-bottom: 1rem;
         }
         footer p { color: var(--text-muted); font-size: 0.875rem; }
         footer .footer-links {
@@ -156,36 +194,107 @@
         .alert-success { background: rgba(28,200,138,0.15); border: 1px solid #1cc88a; color: #1cc88a; }
         .alert-error { background: rgba(231,74,59,0.15); border: 1px solid #e74a3b; color: #e74a3b; }
 
+        /* ===== FLOATING BUTTONS ===== */
+        .floating-buttons {
+            position: fixed;
+            bottom: 2rem;
+            right: 1.5rem;
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+        .float-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.1rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            white-space: nowrap;
+        }
+        .float-btn:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        .float-btn i { font-size: 1.3rem; }
+        .float-btn-label {
+            max-width: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-width 0.3s ease, opacity 0.3s ease;
+        }
+        .float-btn:hover .float-btn-label {
+            max-width: 160px;
+            opacity: 1;
+        }
+        .float-wa  { background: linear-gradient(135deg, #25D366, #128C7E); }
+        .float-yt  { background: linear-gradient(135deg, #ff4444, #cc0000); }
+        .float-ig  { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+
         @yield('extra-styles')
     </style>
     @yield('styles')
 </head>
 <body>
     <nav>
-        <div class="nav-brand"><span>COPA </span>ÍNDIGO<span> MMA</span></div>
+        <a href="#inicio" class="nav-brand">
+            <img src="/IMG_1257.PNG" alt="Copa Índigo MMA" class="nav-brand-img">
+            <div class="nav-brand-text"><span>COPA </span>ÍNDIGO<span> MMA</span></div>
+        </a>
         <div class="nav-links">
             <a href="#evento">El Evento</a>
+            <a href="#galeria">Galería</a>
             <a href="#entradas">Entradas</a>
             <a href="#contacto">Contacto</a>
             @auth
                 @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}"><i class="fas fa-shield-alt"></i> Admin</a>
+                @else
+                    <a href="{{ route('user.registrations') }}"><i class="fas fa-receipt"></i> Mis Entradas</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" style="display:inline;">
                     @csrf
                     <button type="submit" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:0.875rem;font-weight:500;text-transform:uppercase;letter-spacing:1px;">Salir</button>
                 </form>
             @else
-                <a href="{{ route('login') }}">Admin</a>
+                <a href="{{ route('login') }}">Iniciar sesión</a>
+                <a href="{{ route('register') }}">Registrarse</a>
             @endauth
+            <a href="https://www.youtube.com/@copaindigomma" target="_blank" class="nav-yt"><i class="fab fa-youtube"></i> YouTube</a>
             <a href="#entradas" class="nav-cta">🎟️ Comprar</a>
         </div>
     </nav>
 
     @yield('content')
 
+    <!-- FLOATING QUICK BUTTONS -->
+    <div class="floating-buttons">
+        <a href="https://www.youtube.com/@copaindigomma" target="_blank" class="float-btn float-yt">
+            <i class="fab fa-youtube"></i>
+            <span class="float-btn-label">@copaindigomma</span>
+        </a>
+        <a href="https://www.instagram.com/copaindigomma/" target="_blank" class="float-btn float-ig">
+            <i class="fab fa-instagram"></i>
+            <span class="float-btn-label">@copaindigomma</span>
+        </a>
+        <a href="https://wa.me/584242818836" target="_blank" class="float-btn float-wa">
+            <i class="fab fa-whatsapp"></i>
+            <span class="float-btn-label">Escríbenos</span>
+        </a>
+    </div>
+
     <footer>
-        <div class="footer-logo">COPA ÍNDIGO MMA</div>
+        <div class="footer-logo-wrap">
+            <img src="/IMG_0356.PNG" alt="Copa Índigo MMA" class="footer-logo-img">
+            <div class="footer-logo">COPA ÍNDIGO MMA</div>
+        </div>
         <p>En honor a David Brandt 💙🕊️</p>
         <div class="footer-links">
             <a href="#evento">El Evento</a>
@@ -193,9 +302,10 @@
             <a href="#contacto">Contacto</a>
         </div>
         <div class="social-icons">
-            <a href="https://www.instagram.com/julio_brandt" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.instagram.com/sncpharma" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://wa.me/584242818836" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.instagram.com/copaindigomma/" target="_blank" title="@copaindigomma"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.instagram.com/sncpharma" target="_blank" title="@sncpharma"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/584242818836" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://www.youtube.com/@copaindigomma" target="_blank" title="YouTube @copaindigomma" style="border-color:rgba(255,68,68,0.4);color:#ff4444;"><i class="fab fa-youtube"></i></a>
         </div>
         <hr class="footer-divider">
         <p>Organización y Producción: <strong>@julio_brandt</strong> · Patrocinador: <strong>@sncpharma</strong></p>
