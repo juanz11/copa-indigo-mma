@@ -867,25 +867,21 @@
 
                 <div class="payment-info">
                     <strong>💳 Métodos de Pago Disponibles:</strong>
-                    Transferencia Bancaria · Pago Móvil · Zelle · PayPal · Efectivo · Otro
+                    Transferencia Mercantil · Pago Móvil Mercantil · Efectivo
                 </div>
 
                 <div class="form-group">
                     <label>Método de Pago</label>
                     <select name="payment_method" id="payment_method">
                         <option value="">Selecciona un método</option>
-                        <option value="transferencia">Transferencia Bancaria</option>
-                        <option value="pago_movil">Pago Móvil</option>
-                        <option value="fundacion">Fundación David Brandt (Pago Móvil)</option>
-                        <option value="zelle">Zelle</option>
-                        <option value="paypal">PayPal</option>
+                        <option value="transferencia">Transferencia Mercantil</option>
+                        <option value="pago_movil">Pago Móvil Mercantil</option>
                         <option value="efectivo">Efectivo</option>
-                        <option value="otro">Otro</option>
                     </select>
                 </div>
 
                 <div id="payment-details-box" style="display:none;background:var(--dark-3);border:1px solid rgba(212,175,55,0.15);border-radius:8px;padding:1rem;margin-bottom:1.25rem;font-size:0.9rem;line-height:1.6;">
-                    <strong style="color:var(--gold);display:block;margin-bottom:0.5rem;"><i class="fas fa-info-circle"></i> Datos para completar tu pago</strong>
+                    <strong style="color:var(--gold);display:block;margin-bottom:0.75rem;"><i class="fas fa-info-circle"></i> Datos para completar tu pago</strong>
                     <div id="payment-details-content" style="color:var(--text);"></div>
                 </div>
 
@@ -964,6 +960,15 @@
 
     const paymentDetails = @json(config('mma.payments'));
 
+    function copyRow(label, value) {
+        return `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.4rem;" data-copy="${value}">
+                    <span style="word-break:break-word;"><strong>${label}:</strong> ${value}</span>
+                    <button type="button" onclick="copyField(this)" style="background:rgba(212,175,55,0.12);border:none;border-radius:4px;color:var(--gold);padding:0.2rem 0.5rem;font-size:0.75rem;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>`;
+    }
+
     function renderPaymentDetails(method) {
         const box = document.getElementById('payment-details-box');
         const content = document.getElementById('payment-details-content');
@@ -977,28 +982,48 @@
 
         let html = '';
         if (method === 'transferencia') {
-            html = `<strong>Banco:</strong> ${data.bank}<br>` +
-                   `<strong>Titular:</strong> ${data.holder}<br>` +
-                   `<strong>Cuenta:</strong> ${data.account}<br>` +
-                   `<strong>Cédula:</strong> ${data.id}`;
+            html = copyRow('Banco', data.bank) +
+                   copyRow('Titular', data.holder) +
+                   copyRow('Cuenta', data.account) +
+                   copyRow('Cédula / RIF', data.id);
         } else if (method === 'pago_movil') {
-            html = `<strong>Banco:</strong> ${data.bank}<br>` +
-                   `<strong>Teléfono:</strong> ${data.phone}<br>` +
-                   `<strong>Cédula:</strong> ${data.id}`;
-        } else if (method === 'fundacion') {
-            html = `<strong>Titular:</strong> ${data.holder}<br>` +
-                   `<strong>Banco:</strong> ${data.bank}<br>` +
-                   `<strong>Teléfono:</strong> ${data.phone}<br>` +
-                   `<strong>RIF:</strong> ${data.id}`;
-        } else if (method === 'zelle') {
-            html = `<strong>Correo:</strong> ${data.email}<br>` +
-                   `<strong>Titular:</strong> ${data.name}`;
-        } else if (method === 'paypal') {
-            html = `<strong>Correo PayPal:</strong> ${data.email}`;
+            html = copyRow('Banco', data.bank) +
+                   copyRow('Titular', data.holder) +
+                   copyRow('Teléfono', data.phone) +
+                   copyRow('Cédula / RIF', data.id);
         }
 
         content.innerHTML = html;
         box.style.display = 'block';
+    }
+
+    async function copyField(btn) {
+        const row = btn.closest('[data-copy]');
+        const text = row ? row.getAttribute('data-copy') : '';
+        if (!text) return;
+
+        const doCopy = async () => {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (e) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                return ok;
+            }
+        };
+
+        if (await doCopy()) {
+            showToast('success', 'Copiado', 'Dato copiado al portapapeles');
+        } else {
+            showToast('error', 'Error', 'No se pudo copiar el dato');
+        }
     }
 
     // Show/hide reference field and payment details based on payment method
@@ -1058,6 +1083,7 @@
                 const errEl = document.getElementById('modal-error');
                 errEl.textContent = data.message || 'Error al procesar el registro.';
                 errEl.style.display = 'block';
+                errEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-check"></i> Confirmar Registro';
             }
@@ -1066,6 +1092,7 @@
             const errEl = document.getElementById('modal-error');
             errEl.textContent = 'Error de conexión. Por favor, intenta nuevamente.';
             errEl.style.display = 'block';
+            errEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-check"></i> Confirmar Registro';
         });

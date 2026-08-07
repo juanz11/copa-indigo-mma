@@ -25,6 +25,7 @@ class MmaRegistration extends Model
         'payment_reference',
         'payment_proof',
         'status',
+        'ticket_token',
         'admin_notes',
         'approved_at',
         'approved_by',

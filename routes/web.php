@@ -3,12 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MmaRegistrationController;
+use App\Http\Controllers\ScannerController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserPaymentController;
 
 // Página principal Copa Índigo MMA
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+// Boleto digital público (escaneable)
+Route::get('/entrada/{token}', [TicketController::class, 'show'])->name('ticket.show');
 
 // Autenticación
 Route::middleware('guest')->group(function () {
@@ -35,6 +40,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/registros', [MmaRegistrationController::class, 'adminIndex'])->name('mma.index');
     Route::patch('/registros/{registration}/status', [MmaRegistrationController::class, 'updateStatus'])->name('mma.update-status');
     Route::delete('/registros/{registration}', [MmaRegistrationController::class, 'destroy'])->name('mma.destroy');
+    Route::get('/escaner', [ScannerController::class, 'show'])->name('scanner');
 
     Route::get('/whatsapp/{notification}/link', [MmaRegistrationController::class, 'whatsappLink'])->name('whatsapp.link');
     Route::patch('/whatsapp/{notification}/sent', [MmaRegistrationController::class, 'markWhatsappSent'])->name('whatsapp.sent');

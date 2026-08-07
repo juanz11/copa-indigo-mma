@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TicketApprovedMail;
 use App\Models\MmaRegistration;
 use App\Models\WhatsappNotification;
 use App\Services\WhatsappMessageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class MmaRegistrationController extends Controller
 {
@@ -134,12 +137,20 @@ class MmaRegistrationController extends Controller
             'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        $registration->update([
+        $isApproval = $validated['status'] === 'approved';
+
+        $updateData = [
             'status'      => $validated['status'],
             'admin_notes' => $validated['admin_notes'] ?? null,
-            'approved_at' => $validated['status'] === 'approved' ? now() : null,
-            'approved_by' => $validated['status'] === 'approved' ? auth()->id() : null,
-        ]);
+            'approved_at' => $isApproval ? now() : null,
+            'approved_by' => $isApproval ? auth()->id() : null,
+        ];
+
+        if ($isApproval) {
+            $updateData['ticket_token'] = Str::random(32);
+        }
+
+        $registration->update($updateData);
 
         // Guardar notificación de WhatsApp para el cliente (se envía manualmente desde el admin)
         WhatsappMessageService::logNotification(
@@ -147,8 +158,23 @@ class MmaRegistrationController extends Controller
             WhatsappMessageService::messageForClient($registration, $validated['status'])
         );
 
-        $statusText = $validated['status'] === 'approved' ? 'aprobado' : 'rechazado';
-        return back()->with('success', "Registro {$statusText} y notificación de WhatsApp guardada. Abre el panel para enviarla.");
+        // Enviar correo con QR al aprobar
+        if ($isApproval && $registration->email) {
+            try {
+                $adminEmail = config('mail.from.address');
+                Mail::to($registration->email)
+                    ->bcc($adminEmail)
+                    ->send(new TicketApprovedMail($registration));
+            } catch (\Exception $e) {
+                Log::warning('No se pudo enviar correo de aprobación', [
+                    'registration_id' => $registration->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $statusText = $isApproval ? 'aprobado' : 'rechazado';
+        return back()->with('success', "Registro {$statusText}. Correo con QR enviado al cliente y copia al admin.");
     }
 
     public function destroy(MmaRegistration $registration)

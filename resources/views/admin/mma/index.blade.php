@@ -27,6 +27,10 @@
         <p class="stat-label"><i class="fas fa-dollar-sign"></i> Recaudado</p>
         <p class="stat-value">${{ number_format($stats['revenue'], 2) }}</p>
     </div>
+    <a href="{{ route('admin.scanner') }}" class="stat-card" style="text-decoration:none;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);display:flex;flex-direction:column;justify-content:center;">
+        <p class="stat-label" style="color:var(--gold);"><i class="fas fa-qrcode"></i> Escanear QR</p>
+        <p class="stat-value" style="font-size:0.9rem;color:#aaa;">Validar entradas</p>
+    </a>
 </div>
 
 <!-- Table -->
