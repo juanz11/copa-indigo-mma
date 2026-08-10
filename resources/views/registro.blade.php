@@ -101,7 +101,7 @@
     }
     .alert.success { background: rgba(28,200,138,0.1); color: #1cc88a; border: 1px solid rgba(28,200,138,0.3); }
     .alert.error { background: rgba(231,74,59,0.1); color: #e74a3b; border: 1px solid rgba(231,74,59,0.3); }
-    .exito-section { display: none; text-align: center; padding: 2rem 1rem; }
+    .exito-section { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 50vh; text-align: center; padding: 2rem 1rem; }
     .exito-section i { font-size: 4rem; color: #22c55e; margin-bottom: 1rem; }
     .exito-section h2 { color: var(--gold); margin-bottom: 0.5rem; }
     .exito-section p { color: #aaa; margin-bottom: 1.5rem; }
@@ -156,14 +156,14 @@
                     </div>
                     <div class="form-group">
                         <label>Cédula *</label>
-                        <input type="text" name="id_number" placeholder="Ej: V-12345678" required value="{{ old('id_number') }}">
+                        <input type="text" name="id_number" placeholder="Ej: V-12345678" required value="{{ old('id_number', auth()->user()->id_number ?? '') }}">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label>Teléfono *</label>
-                        <input type="tel" name="phone" placeholder="Ej: 0424-1234567" required value="{{ old('phone') }}">
+                        <input type="tel" name="phone" placeholder="Ej: 0424-1234567" required value="{{ old('phone', auth()->user()->phone ?? '') }}">
                     </div>
                     <div class="form-group">
                         <label>Correo Electrónico</label>
@@ -346,7 +346,7 @@
         .then(data => {
             if (data.success) {
                 document.getElementById('form-section').style.display = 'none';
-                document.getElementById('exito-section').style.display = 'block';
+                document.getElementById('exito-section').style.display = 'flex';
                 ok.textContent = data.message;
                 ok.style.display = 'block';
             } else {

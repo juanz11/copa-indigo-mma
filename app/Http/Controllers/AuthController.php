@@ -22,9 +22,11 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|max:255|unique:users,email',
+            'id_number' => 'required|string|max:50',
+            'phone'     => 'required|string|max:20',
+            'password'  => 'required|string|min:6|confirmed',
         ], [
             'email.unique' => 'Este correo ya está registrado.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
@@ -32,10 +34,12 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role'     => 'user',
+            'name'      => $validated['name'],
+            'email'     => $validated['email'],
+            'id_number' => $validated['id_number'],
+            'phone'     => $validated['phone'],
+            'password'  => Hash::make($validated['password']),
+            'role'      => 'user',
         ]);
 
         Auth::login($user);

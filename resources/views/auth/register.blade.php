@@ -100,6 +100,14 @@
                 <input type="email" name="email" value="{{ old('email') }}" required placeholder="correo@ejemplo.com">
             </div>
             <div class="form-group">
+                <label>Cédula *</label>
+                <input type="text" name="id_number" value="{{ old('id_number') }}" required placeholder="Ej: V-12345678">
+            </div>
+            <div class="form-group">
+                <label>Teléfono *</label>
+                <input type="tel" name="phone" value="{{ old('phone') }}" required placeholder="Ej: 0424-1234567">
+            </div>
+            <div class="form-group">
                 <label>Contraseña</label>
                 <input type="password" name="password" required placeholder="••••••••">
             </div>
