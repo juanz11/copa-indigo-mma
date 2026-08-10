@@ -273,6 +273,11 @@
                     @endif
                 </a>
             </li>
+            <li>
+                <a href="{{ route('admin.mesas.index') }}" class="{{ request()->routeIs('admin.mesas.*') ? 'active' : '' }}">
+                    <i class="fas fa-chair"></i> Disponibilidad de Mesas
+                </a>
+            </li>
             <hr class="sidebar-divider">
             <li>
                 <a href="{{ url('/') }}">

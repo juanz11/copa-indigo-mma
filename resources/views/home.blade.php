@@ -686,92 +686,38 @@
     </div>
 </section>
 
-<!-- GALERÍA -->
-<section class="gallery-section" id="galeria">
-    <div class="gallery-inner">
-        <div class="section-inner" style="padding:0;margin:0;max-width:100%;">
-            <p class="section-tag">📸 Identidad Visual</p>
-            <h2 class="section-title">El arte detrás del<br><span class="accent">evento.</span></h2>
-        </div>
-        <div class="gallery-grid">
-            <div class="gallery-item">
-                <img src="/IMG_0941.PNG" alt="Copa Índigo MMA Banner">
-            </div>
-            <div class="gallery-item">
-                <img src="/IMG_0942.PNG" alt="Copa Índigo MMA Arena">
-            </div>
-            <div class="gallery-item">
-                <img src="/IMG_0939.PNG" alt="Copa Índigo MMA Octágono">
-            </div>
-            <div class="gallery-item">
-                <img src="/IMG_0955.PNG" alt="Copa Índigo MMA David Brandt">
-            </div>
-            <div class="gallery-item">
-                <img src="/IMG_0940.PNG" alt="Copa Índigo MMA Luces">
-            </div>
-            <div class="gallery-item" style="display:flex;align-items:center;justify-content:center;background:var(--dark-3);border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:2rem;">
-                <img src="/IMG_0292.PNG" alt="Copa Índigo MMA Logo" style="max-height:220px;width:auto;filter:drop-shadow(0 0 20px rgba(212,175,55,0.4));">
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- ENTRADAS -->
 <section class="section tickets-section" id="entradas">
     <div class="section-inner">
         <p class="section-tag">🎟️ Entradas</p>
         <h2 class="section-title">Asegura tu acceso a esta<br><span class="accent">noche histórica</span></h2>
-        <p class="section-text">Elige tu tipo de entrada y vive la experiencia desde donde quieras. Cupos limitados.</p>
+        <p class="section-text">Reserva una mesa para ti, tu familia o grupo. Cada mesa tiene 8 sillas.</p>
         <div class="tickets-grid">
-            <!-- General -->
+            <!-- Mesa General -->
             <div class="ticket-card">
-                <p class="ticket-type">General</p>
-                <p class="ticket-price">$30 <span>USD / persona</span></p>
+                <p class="ticket-type">Mesa General</p>
+                <p class="ticket-price">$50 <span>USD / silla</span></p>
+                <p style="color:var(--gold);font-size:0.9rem;margin-top:-0.5rem;margin-bottom:1rem;">Mesa completa: $400 USD</p>
                 <ul class="ticket-perks">
-                    <li><i class="fas fa-check-circle"></i> Acceso al evento</li>
-                    <li><i class="fas fa-check-circle"></i> Tribuna general</li>
-                    <li><i class="fas fa-check-circle"></i> Experiencia MMA completa</li>
+                    <li><i class="fas fa-check-circle"></i> Hasta 8 sillas</li>
+                    <li><i class="fas fa-check-circle"></i> Mesa completa: 1 servicio de Ron y/o Vodka</li>
+                    <li><i class="fas fa-check-circle"></i> Mesa completa: 1 ración de Tequeños</li>
                 </ul>
                 <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
             </div>
 
-            <!-- VIP -->
+            <!-- Mesa VIP -->
             <div class="ticket-card featured">
                 <div class="ticket-badge">⭐ Más Popular</div>
-                <p class="ticket-type">VIP</p>
-                <p class="ticket-price">$60 <span>USD / persona</span></p>
+                <p class="ticket-type">Mesa VIP</p>
+                <p class="ticket-price">$60 <span>USD / silla</span></p>
+                <p style="color:var(--gold);font-size:0.9rem;margin-top:-0.5rem;margin-bottom:1rem;">Mesa completa: $480 USD</p>
                 <ul class="ticket-perks">
-                    <li><i class="fas fa-check-circle"></i> Zona VIP preferencial</li>
-                    <li><i class="fas fa-check-circle"></i> Consumición incluida</li>
-                    <li><i class="fas fa-check-circle"></i> Acceso prioritario</li>
-                    <li><i class="fas fa-check-circle"></i> Experiencia premium</li>
+                    <li><i class="fas fa-check-circle"></i> Hasta 8 sillas</li>
+                    <li><i class="fas fa-check-circle"></i> Mesa completa: 1 servicio de Whisky</li>
+                    <li><i class="fas fa-check-circle"></i> Mesa completa: 2 raciones de Tequeños</li>
                 </ul>
                 <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
-            </div>
-
-            <!-- Ringside -->
-            <div class="ticket-card">
-                <p class="ticket-type">Ringside</p>
-                <p class="ticket-price">$100 <span>USD / persona</span></p>
-                <ul class="ticket-perks">
-                    <li><i class="fas fa-check-circle"></i> Primera fila al octágono</li>
-                    <li><i class="fas fa-check-circle"></i> Zona exclusiva Ringside</li>
-                    <li><i class="fas fa-check-circle"></i> Consumición premium</li>
-                    <li><i class="fas fa-check-circle"></i> Meet & Greet con atletas</li>
-                </ul>
-                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
-            </div>
-
-            <!-- Mesa -->
-            <div class="ticket-card">
-                <p class="ticket-type">Mesa</p>
-                <p class="ticket-price">Por <span>reservar</span></p>
-                <ul class="ticket-perks">
-                    <li><i class="fas fa-check-circle"></i> Elige tu mesa en el plano</li>
-                    <li><i class="fas fa-check-circle"></i> Grupos y familia</li>
-                    <li><i class="fas fa-check-circle"></i> Mejor ubicación por sector</li>
-                </ul>
-                <a href="{{ route('mapa.index') }}" class="ticket-btn" style="display:inline-block;text-decoration:none;text-align:center;">Reservar Mesa</a>
             </div>
         </div>
 
@@ -825,10 +771,16 @@
     <div class="modal-box">
         <div class="modal-header">
             <div>
-                <h2>🎟️ Registro de Entrada</h2>
+                <h2>🎟️ Reservar Mesa</h2>
                 <p class="selected-type" id="modalTicketLabel">Entrada General</p>
             </div>
             <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+
+        <div class="stepper" style="display:flex;justify-content:center;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid rgba(212,175,55,0.1);font-size:0.85rem;font-weight:600;">
+            <div class="step active" id="step-indicator-1" style="color:var(--gold);">1. Mesas</div>
+            <div class="step" id="step-indicator-2" style="color:var(--text-muted);">2. Pago</div>
+            <div class="step" id="step-indicator-3" style="color:var(--text-muted);">3. Confirmación</div>
         </div>
 
         <div class="modal-body">
@@ -841,82 +793,126 @@
                 <input type="hidden" name="total_amount" id="total_amount" value="{{ request('total_amount', '30') }}">
                 <input type="hidden" name="mesa_id" id="mesa_id" value="{{ request('mesa_id') }}">
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Nombre y Apellido *</label>
-                        <input type="text" name="full_name" placeholder="Ej: Juan Pérez" required>
+                <!-- Paso 1: Sillas -->
+                <div id="step-1" class="step-content">
+                    <div class="form-group" id="table-type-group">
+                        <label>Tipo de Mesa</label>
+                        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:0.5rem;">
+                            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
+                                <input type="radio" name="table_type_radio" value="mesa_general" checked onchange="setTableType(this.value)">
+                                <span>General — $50/silla ($400 mesa completa)</span>
+                            </label>
+                            <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
+                                <input type="radio" name="table_type_radio" value="mesa_vip" onchange="setTableType(this.value)">
+                                <span>VIP — $60/silla ($480 mesa completa)</span>
+                            </label>
+                        </div>
+                        <p class="form-hint" id="mesa-benefits" style="display:none;margin-top:0.5rem;color:var(--gold);"></p>
                     </div>
-                    <div class="form-group">
-                        <label>Cédula *</label>
-                        <input type="text" name="id_number" placeholder="Ej: V-12345678" required>
+
+                    <div class="form-group" id="quantity-group">
+                        <label>Cantidad de Sillas *</label>
+                        <input type="number" name="quantity" id="quantity" value="1" min="1" max="8" required>
+                        <p class="form-hint" id="price-hint">Precio: $50 USD por silla</p>
+                        <button type="button" class="ticket-btn" style="margin-top:0.75rem;" onclick="comprarMesaCompleta()">Comprar mesa completa (8 sillas)</button>
+                    </div>
+
+                    <div class="form-total-box">
+                        <span class="label">Total a Pagar</span>
+                        <span class="amount" id="total-display">$50.00 USD</span>
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Teléfono *</label>
-                        <input type="tel" name="phone" placeholder="Ej: 0424-1234567" required>
+                <!-- Paso 2: Datos y pago -->
+                <div id="step-2" class="step-content" style="display:none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre y Apellido *</label>
+                            <input type="text" name="full_name" placeholder="Ej: Juan Pérez" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cédula *</label>
+                            <input type="text" name="id_number" placeholder="Ej: V-12345678" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Correo Electrónico</label>
-                        <input type="email" name="email" placeholder="ejemplo@correo.com">
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Teléfono *</label>
+                            <input type="tel" name="phone" placeholder="Ej: 0424-1234567" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Correo Electrónico</label>
+                            <input type="email" name="email" placeholder="ejemplo@correo.com">
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label>Instagram / Red Social</label>
-                    <input type="text" name="social_media" placeholder="@usuario">
-                </div>
+                    <div class="form-group">
+                        <label>Instagram / Red Social</label>
+                        <input type="text" name="social_media" placeholder="@usuario">
+                    </div>
 
-                <div class="form-group">
-                    <label>Cantidad de Entradas *</label>
-                    <input type="number" name="quantity" id="quantity" value="1" min="1" max="20" required>
-                    <p class="form-hint" id="price-hint">Precio: $30 USD por persona</p>
-                </div>
+                    <div class="payment-info">
+                        <strong>💳 Métodos de Pago Disponibles:</strong>
+                        Transferencia Mercantil · Pago Móvil Mercantil · Efectivo
+                    </div>
 
-                <div class="form-total-box">
-                    <span class="label">Total a Pagar</span>
-                    <span class="amount" id="total-display">$30.00 USD</span>
-                </div>
+                    <div class="form-group">
+                        <label>Método de Pago</label>
+                        <select name="payment_method" id="payment_method">
+                            <option value="">Selecciona un método</option>
+                            <option value="transferencia">Transferencia Mercantil</option>
+                            <option value="pago_movil">Pago Móvil Mercantil</option>
+                            <option value="efectivo">Efectivo</option>
+                        </select>
+                    </div>
 
-                <div class="payment-info">
-                    <strong>💳 Métodos de Pago Disponibles:</strong>
-                    Transferencia Mercantil · Pago Móvil Mercantil · Efectivo
-                </div>
+                    <div id="payment-details-box" style="display:none;background:var(--dark-3);border:1px solid rgba(212,175,55,0.15);border-radius:8px;padding:1rem;margin-bottom:1.25rem;font-size:0.9rem;line-height:1.6;">
+                        <strong style="color:var(--gold);display:block;margin-bottom:0.75rem;"><i class="fas fa-info-circle"></i> Datos para completar tu pago</strong>
+                        <div id="payment-details-content" style="color:var(--text);"></div>
+                    </div>
 
-                <div class="form-group">
-                    <label>Método de Pago</label>
-                    <select name="payment_method" id="payment_method">
-                        <option value="">Selecciona un método</option>
-                        <option value="transferencia">Transferencia Mercantil</option>
-                        <option value="pago_movil">Pago Móvil Mercantil</option>
-                        <option value="efectivo">Efectivo</option>
-                    </select>
-                </div>
+                    <div class="form-group" id="reference-group">
+                        <label>Número de Referencia *</label>
+                        <input type="text" name="payment_reference" id="payment_reference" placeholder="Ingresa el número de referencia" required>
+                    </div>
 
-                <div id="payment-details-box" style="display:none;background:var(--dark-3);border:1px solid rgba(212,175,55,0.15);border-radius:8px;padding:1rem;margin-bottom:1.25rem;font-size:0.9rem;line-height:1.6;">
-                    <strong style="color:var(--gold);display:block;margin-bottom:0.75rem;"><i class="fas fa-info-circle"></i> Datos para completar tu pago</strong>
-                    <div id="payment-details-content" style="color:var(--text);"></div>
-                </div>
-
-                <div class="form-group" id="reference-group">
-                    <label>Número de Referencia *</label>
-                    <input type="text" name="payment_reference" id="payment_reference" placeholder="Ingresa el número de referencia" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Comprobante de Pago</label>
-                    <input type="file" name="payment_proof" accept="image/*,.pdf">
-                    <p class="form-hint">Formatos: JPG, PNG, PDF (máx. 5MB)</p>
+                    <div class="form-group">
+                        <label>Comprobante de Pago</label>
+                        <input type="file" name="payment_proof" accept="image/*,.pdf">
+                        <p class="form-hint">Formatos: JPG, PNG, PDF (máx. 5MB)</p>
+                    </div>
                 </div>
             </form>
+
+            <!-- Paso 3: Confirmación -->
+            <div id="step-3" class="step-content" style="display:none;text-align:center;padding:1rem 0;">
+                <div style="font-size:3.5rem;color:#22c55e;margin-bottom:1rem;"><i class="fas fa-check-circle"></i></div>
+                <h3 style="color:var(--gold);margin-bottom:0.5rem;">¡Gracias por tu compra!</h3>
+                <p style="color:var(--text-muted);margin-bottom:1.5rem;">Tu reserva fue recibida. Te contactaremos para confirmar el pago.</p>
+
+                <div style="background:var(--dark-3);border:1px solid rgba(212,175,55,0.15);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;text-align:left;">
+                    <h4 style="color:var(--gold);margin-bottom:0.75rem;font-size:1rem;">Resumen</h4>
+                    <p style="margin-bottom:0.4rem;color:var(--text);"><strong>Mesa:</strong> <span id="resumen-mesa">-</span></p>
+                    <p style="margin-bottom:0.4rem;color:var(--text);"><strong>Tipo:</strong> <span id="resumen-tipo">-</span></p>
+                    <p style="margin-bottom:0.4rem;color:var(--text);"><strong>Sillas:</strong> <span id="resumen-sillas">-</span></p>
+                    <p style="margin-bottom:0;color:var(--text);"><strong>Total:</strong> <span id="resumen-total">-</span></p>
+                </div>
+
+                <ul class="checklist" style="text-align:left;max-width:400px;margin:0 auto 1.5rem;color:var(--text);font-size:0.9rem;list-style:none;">
+                    <li style="margin-bottom:0.6rem;"><i class="fas fa-check" style="color:#22c55e;margin-right:0.5rem;"></i> Mesa reservada</li>
+                    <li style="margin-bottom:0.6rem;"><i class="fas fa-check" style="color:#22c55e;margin-right:0.5rem;"></i> Pago registrado</li>
+                    <li style="margin-bottom:0.6rem;"><i class="fas fa-check" style="color:#22c55e;margin-right:0.5rem;"></i> Confirmación vía WhatsApp/Email</li>
+                    <li style="margin-bottom:0.6rem;"><i class="fas fa-check" style="color:#22c55e;margin-right:0.5rem;"></i> Ticket digital al aprobar</li>
+                </ul>
+
+                <button type="button" class="btn-submit" onclick="closeModal()">Aceptar</button>
+            </div>
         </div>
 
-        <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-            <button class="btn-submit" id="submitBtn" onclick="submitForm()">
-                <i class="fas fa-check"></i> Confirmar Registro
-            </button>
+        <div class="modal-footer" id="modalFooter" style="display:flex;justify-content:space-between;align-items:center;">
+            <button class="btn-cancel" id="backBtn" onclick="closeModal()">Cancelar</button>
+            <button class="btn-submit" id="stepBtn" onclick="nextStep()">Continuar</button>
         </div>
     </div>
 </div>
@@ -933,31 +929,93 @@
 
 @section('scripts')
 <script>
-    const PRICES = { general: 30, vip: 60, ringside: 100, mesa: 120 };
-    const LABELS = { general: 'Entrada General — $30 USD', vip: 'Entrada VIP — $60 USD', ringside: 'Entrada Ringside — $100 USD', mesa: 'Mesa — $120 USD' };
+    const PRICES = { general: 30, vip: 60, ringside: 100, mesa_general: 50, mesa_vip: 60 };
+    const LABELS = { general: 'Entrada General — $30 USD', vip: 'Entrada VIP — $60 USD', ringside: 'Entrada Ringside — $100 USD', mesa_general: 'Mesa General — $50 USD/silla', mesa_vip: 'Mesa VIP — $60 USD/silla' };
     const MESA_NUMERO = '{{ request('numero') }}';
     const OPEN_MODAL = {{ request('open_modal') ? 'true' : 'false' }};
     const isLoggedIn = @json(auth()->check());
 
     let currentType = 'general';
+    let currentStep = 1;
+
+    function goToStep(step) {
+        currentStep = step;
+
+        document.getElementById('step-1').style.display = step === 1 ? 'block' : 'none';
+        document.getElementById('step-2').style.display = step === 2 ? 'block' : 'none';
+        document.getElementById('step-3').style.display = step === 3 ? 'block' : 'none';
+
+        document.getElementById('step-indicator-1').style.color = step >= 1 ? 'var(--gold)' : 'var(--text-muted)';
+        document.getElementById('step-indicator-2').style.color = step >= 2 ? 'var(--gold)' : 'var(--text-muted)';
+        document.getElementById('step-indicator-3').style.color = step >= 3 ? 'var(--gold)' : 'var(--text-muted)';
+
+        const footer = document.getElementById('modalFooter');
+        const stepBtn = document.getElementById('stepBtn');
+        const backBtn = document.getElementById('backBtn');
+
+        if (step === 3) {
+            footer.style.display = 'none';
+            return;
+        }
+
+        footer.style.display = 'flex';
+
+        if (step === 1) {
+            backBtn.textContent = 'Cancelar';
+            backBtn.onclick = closeModal;
+            stepBtn.innerHTML = 'Continuar';
+            stepBtn.onclick = nextStep;
+        } else if (step === 2) {
+            backBtn.textContent = 'Atrás';
+            backBtn.onclick = function () { goToStep(1); };
+            stepBtn.innerHTML = '<i class="fas fa-check"></i> Confirmar Registro';
+            stepBtn.onclick = submitForm;
+        }
+    }
+
+    function nextStep() {
+        const qty = document.getElementById('quantity');
+        if (!qty.checkValidity()) {
+            qty.reportValidity();
+            return;
+        }
+        goToStep(2);
+    }
+
+    function updateResumen() {
+        const qty = document.getElementById('quantity').value;
+        const total = document.getElementById('total_amount').value;
+        const mesa = MESA_NUMERO ? '#' + MESA_NUMERO : 'No seleccionada';
+        const tipo = currentType === 'mesa_vip' ? 'Mesa VIP' : 'Mesa General';
+
+        document.getElementById('resumen-mesa').textContent = mesa;
+        document.getElementById('resumen-tipo').textContent = tipo;
+        document.getElementById('resumen-sillas').textContent = qty;
+        document.getElementById('resumen-total').textContent = '$' + total + ' USD';
+    }
 
     function openModal(type) {
         if (!isLoggedIn) {
             window.location.href = '{{ route('register') }}';
             return;
         }
-        currentType = type;
-        document.getElementById('ticket_type').value = type;
 
-        if (type === 'mesa' && MESA_NUMERO) {
-            document.getElementById('modalTicketLabel').textContent = 'Mesa #' + MESA_NUMERO + ' — $' + PRICES.mesa + ' USD';
-            document.getElementById('price-hint').textContent = 'Precio: $' + PRICES.mesa + ' USD por mesa';
+        window.location.href = '{{ route('mapa.index') }}';
+        return;
+
+        const tableGroup = document.getElementById('table-type-group');
+        const quantityLabel = document.querySelector('#quantity-group label');
+
+        if (type.startsWith('mesa')) {
+            if (tableGroup) tableGroup.style.display = 'block';
+            if (quantityLabel) quantityLabel.textContent = 'Cantidad de Sillas *';
         } else {
-            document.getElementById('modalTicketLabel').textContent = LABELS[type] || LABELS['general'];
-            document.getElementById('price-hint').textContent = 'Precio: $' + (PRICES[type] || 30) + ' USD por persona';
+            if (tableGroup) tableGroup.style.display = 'none';
+            if (quantityLabel) quantityLabel.textContent = 'Cantidad de Entradas *';
         }
 
-        updateTotal();
+        setTableType(type);
+        goToStep(1);
         document.getElementById('registroModal').classList.add('active');
         document.body.style.overflow = 'hidden';
         document.getElementById('modal-success').style.display = 'none';
@@ -968,7 +1026,47 @@
         document.getElementById('registroModal').classList.remove('active');
         document.body.style.overflow = '';
         document.getElementById('registroForm').reset();
-        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('stepBtn').disabled = false;
+        goToStep(1);
+    }
+
+    function setTableType(type) {
+        currentType = type;
+        document.getElementById('ticket_type').value = type;
+
+        const radio = document.querySelector('input[name="table_type_radio"][value="' + type + '"]');
+        if (radio) radio.checked = true;
+
+        if (MESA_NUMERO) {
+            const typeLabel = type === 'mesa_vip' ? 'VIP' : 'General';
+            document.getElementById('modalTicketLabel').textContent = 'Mesa #' + MESA_NUMERO + ' — ' + typeLabel;
+        } else {
+            document.getElementById('modalTicketLabel').textContent = LABELS[type] || LABELS['general'];
+        }
+
+        document.getElementById('price-hint').textContent = 'Precio: $' + (PRICES[type] || 30) + ' USD por silla';
+        updateTotal();
+    }
+
+    function comprarMesaCompleta() {
+        document.getElementById('quantity').value = 8;
+        updateTotal();
+    }
+
+    function updateMesaBenefits() {
+        const qty = parseInt(document.getElementById('quantity').value) || 1;
+        const benefits = document.getElementById('mesa-benefits');
+        if (!benefits) return;
+
+        if (currentType === 'mesa_general' && qty >= 8) {
+            benefits.textContent = 'Mesa completa: incluye 1 servicio de Ron y/o Vodka + 1 ración de Tequeños.';
+            benefits.style.display = 'block';
+        } else if (currentType === 'mesa_vip' && qty >= 8) {
+            benefits.textContent = 'Mesa completa: incluye 1 servicio de Whisky + 2 raciones de Tequeños.';
+            benefits.style.display = 'block';
+        } else {
+            benefits.style.display = 'none';
+        }
     }
 
     function updateTotal() {
@@ -977,6 +1075,7 @@
         const total = (qty * price).toFixed(2);
         document.getElementById('total_amount').value = total;
         document.getElementById('total-display').textContent = '$' + total + ' USD';
+        updateMesaBenefits();
     }
 
     document.getElementById('quantity').addEventListener('input', updateTotal);
@@ -1085,8 +1184,14 @@
     }
 
     function submitForm() {
-        const btn = document.getElementById('submitBtn');
+        const btn = document.getElementById('stepBtn');
         const form = document.getElementById('registroForm');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
         const formData = new FormData(form);
 
         btn.disabled = true;
@@ -1100,7 +1205,8 @@
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                closeModal();
+                updateResumen();
+                goToStep(3);
                 showToast('success', '¡Registro exitoso!', data.message);
             } else {
                 const errEl = document.getElementById('modal-error');
@@ -1121,9 +1227,6 @@
         });
     }
 
-    // Abrir modal automáticamente si se viene del mapa con una mesa reservada
-    if (OPEN_MODAL) {
-        openModal('mesa');
-    }
+    // El flujo de compra ahora es vista a vista (mapa -> registro)
 </script>
 @endsection

@@ -32,6 +32,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 
 // Compra de entradas (requiere login)
 Route::middleware('auth')->group(function () {
+    Route::get('/registro', [MmaRegistrationController::class, 'registro'])->name('mma.registro');
     Route::post('/registro', [MmaRegistrationController::class, 'store'])->name('mma.register');
     Route::get('/mis-registros', [UserPaymentController::class, 'index'])->name('user.registrations');
 });
@@ -43,6 +44,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     })->name('dashboard');
 
     Route::get('/registros', [MmaRegistrationController::class, 'adminIndex'])->name('mma.index');
+    Route::get('/mesas', [MapaController::class, 'adminMesas'])->name('mesas.index');
+    Route::patch('/mesas/{mesa}', [MapaController::class, 'updateMesa'])->name('mesas.update');
     Route::patch('/registros/{registration}/status', [MmaRegistrationController::class, 'updateStatus'])->name('mma.update-status');
     Route::delete('/registros/{registration}', [MmaRegistrationController::class, 'destroy'])->name('mma.destroy');
     Route::get('/escaner', [ScannerController::class, 'show'])->name('scanner');

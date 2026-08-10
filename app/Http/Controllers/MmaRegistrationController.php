@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\TicketApprovedMail;
+use App\Models\Mesa;
 use App\Models\MmaRegistration;
 use App\Models\WhatsappNotification;
 use App\Services\WhatsappMessageService;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class MmaRegistrationController extends Controller
 {
@@ -22,8 +24,8 @@ class MmaRegistrationController extends Controller
                 'phone'             => 'required|string|max:20',
                 'email'             => 'nullable|email|max:255',
                 'social_media'      => 'nullable|string|max:255',
-                'ticket_type'       => 'required|in:general,vip,ringside,mesa',
-                'quantity'          => 'required|integer|min:1|max:50',
+                'ticket_type'       => 'required|in:general,vip,ringside,mesa,mesa_general,mesa_vip',
+                'quantity'          => 'required|integer|min:1',
                 'total_amount'      => 'required|numeric|min:1',
                 'payment_method'    => 'nullable|string|max:100',
                 'payment_reference' => 'nullable|string|max:255',
@@ -41,6 +43,21 @@ class MmaRegistrationController extends Controller
                 'payment_proof.mimes'   => 'El comprobante debe ser JPG, PNG o PDF.',
                 'payment_proof.max'     => 'El comprobante no debe superar los 5MB.',
             ]);
+
+            if (!empty($validated['mesa_id'])) {
+                $mesa = Mesa::withSum('registrations', 'quantity')->findOrFail($validated['mesa_id']);
+                $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
+
+                if ($vendidas + $validated['quantity'] > $mesa->capacidad) {
+                    throw ValidationException::withMessages([
+                        'quantity' => 'Solo quedan ' . ($mesa->capacidad - $vendidas) . ' sillas disponibles en la mesa #' . $mesa->numero . '.',
+                    ]);
+                }
+
+                $mesa->update([
+                    'estado' => ($vendidas + $validated['quantity'] >= $mesa->capacidad) ? 'ocupada' : 'reservada',
+                ]);
+            }
 
             $paymentProofPath = null;
             if ($request->hasFile('payment_proof')) {
@@ -113,6 +130,39 @@ class MmaRegistrationController extends Controller
             }
             return back()->with('error', 'Ocurrió un error al procesar tu registro. Por favor, intenta nuevamente.');
         }
+    }
+
+    public function registro(Request $request)
+    {
+        $validated = $request->validate([
+            'mesa_id'  => 'required|exists:mesas,id',
+            'numero'   => 'nullable|string|max:50',
+            'tipo'     => 'nullable|in:mesa_general,mesa_vip',
+            'cantidad' => 'nullable|integer|min:1',
+        ]);
+
+        $mesa = Mesa::withSum('registrations', 'quantity')->findOrFail($validated['mesa_id']);
+        $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
+        $disponibles = max(0, $mesa->capacidad - $vendidas);
+
+        $tipo = in_array($validated['tipo'] ?? '', ['mesa_general', 'mesa_vip'])
+            ? $validated['tipo']
+            : 'mesa_general';
+
+        $cantidad = min(max((int) ($validated['cantidad'] ?? 1), 1), $disponibles);
+        $precio = $tipo === 'mesa_vip' ? 60 : 50;
+        $total = $cantidad * $precio;
+
+        return view('registro', [
+            'mesa'        => $mesa,
+            'numero'      => $validated['numero'] ?? $mesa->numero,
+            'tipo'        => $tipo,
+            'cantidad'    => $cantidad,
+            'precio'      => $precio,
+            'total'       => $total,
+            'disponibles' => $disponibles,
+            'vendidas'    => $vendidas,
+        ]);
     }
 
     public function adminIndex()

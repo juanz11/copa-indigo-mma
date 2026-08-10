@@ -10,7 +10,7 @@ class UserPaymentController extends Controller
     {
         $registrations = auth()->user()
             ->registrations()
-            ->with('whatsappNotifications')
+            ->with(['whatsappNotifications', 'mesa'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
