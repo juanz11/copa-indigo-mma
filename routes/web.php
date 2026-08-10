@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MapaController;
 use App\Http\Controllers\MmaRegistrationController;
 use App\Http\Controllers\ScannerController;
 use App\Http\Controllers\TicketController;
@@ -14,6 +15,10 @@ Route::get('/', function () {
 
 // Boleto digital público (escaneable)
 Route::get('/entrada/{token}', [TicketController::class, 'show'])->name('ticket.show');
+
+// Mapa interactivo de mesas
+Route::get('/mapa', [MapaController::class, 'index'])->name('mapa.index');
+Route::post('/mapa/reservar', [MapaController::class, 'reservar'])->name('mapa.reservar');
 
 // Autenticación
 Route::middleware('guest')->group(function () {

@@ -26,6 +26,7 @@ class MmaRegistration extends Model
         'payment_proof',
         'status',
         'ticket_token',
+        'mesa_id',
         'admin_notes',
         'approved_at',
         'approved_by',
@@ -43,6 +44,11 @@ class MmaRegistration extends Model
     public function approver()
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function mesa()
+    {
+        return $this->belongsTo(Mesa::class);
     }
 
     public function whatsappNotifications()

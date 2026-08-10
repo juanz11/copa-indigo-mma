@@ -605,7 +605,8 @@
         <div class="hero-meta-item"><i class="fas fa-map-marker-alt"></i> Hotel Hesperia Valencia</div>
     </div>
     <div class="hero-actions">
-        <button class="btn-primary" onclick="openModal('vip')"><i class="fas fa-ticket-alt"></i> Asegurar mi Entrada</button>
+        <a href="{{ route('mapa.index') }}" class="btn-primary" style="text-decoration:none;"><i class="fas fa-chair"></i> Reservar Mesa</a>
+        <button class="btn-secondary" onclick="openModal('vip')"><i class="fas fa-ticket-alt"></i> Asegurar mi Entrada</button>
         <a href="#evento" class="btn-outline"><i class="fas fa-info-circle"></i> Más Información</a>
     </div>
     <div class="hero-scroll"><i class="fas fa-chevron-down"></i> Descubre</div>
@@ -760,6 +761,18 @@
                 </ul>
                 <button class="ticket-btn" onclick="openModal('ringside')">Comprar Ringside</button>
             </div>
+
+            <!-- Mesa -->
+            <div class="ticket-card">
+                <p class="ticket-type">Mesa</p>
+                <p class="ticket-price">Por <span>reservar</span></p>
+                <ul class="ticket-perks">
+                    <li><i class="fas fa-check-circle"></i> Elige tu mesa en el plano</li>
+                    <li><i class="fas fa-check-circle"></i> Grupos y familia</li>
+                    <li><i class="fas fa-check-circle"></i> Mejor ubicación por sector</li>
+                </ul>
+                <a href="{{ route('mapa.index') }}" class="ticket-btn" style="display:inline-block;text-decoration:none;text-align:center;">Reservar Mesa</a>
+            </div>
         </div>
 
         <p style="text-align:center;margin-top:2rem;color:var(--text-muted);font-size:0.85rem;">
@@ -824,8 +837,9 @@
 
             <form id="registroForm" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="ticket_type" id="ticket_type" value="general">
-                <input type="hidden" name="total_amount" id="total_amount" value="30">
+                <input type="hidden" name="ticket_type" id="ticket_type" value="{{ request('ticket_type', 'general') }}">
+                <input type="hidden" name="total_amount" id="total_amount" value="{{ request('total_amount', '30') }}">
+                <input type="hidden" name="mesa_id" id="mesa_id" value="{{ request('mesa_id') }}">
 
                 <div class="form-row">
                     <div class="form-group">

@@ -22,12 +22,13 @@ class MmaRegistrationController extends Controller
                 'phone'             => 'required|string|max:20',
                 'email'             => 'nullable|email|max:255',
                 'social_media'      => 'nullable|string|max:255',
-                'ticket_type'       => 'required|in:general,vip,ringside',
+                'ticket_type'       => 'required|in:general,vip,ringside,mesa',
                 'quantity'          => 'required|integer|min:1|max:50',
                 'total_amount'      => 'required|numeric|min:1',
                 'payment_method'    => 'nullable|string|max:100',
                 'payment_reference' => 'nullable|string|max:255',
                 'payment_proof'     => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+                'mesa_id'           => 'nullable|exists:mesas,id',
             ], [
                 'full_name.required'    => 'El nombre completo es obligatorio.',
                 'id_number.required'    => 'La cédula es obligatoria.',
@@ -61,6 +62,7 @@ class MmaRegistrationController extends Controller
                 'payment_method'    => $validated['payment_method'] ?? null,
                 'payment_reference' => $validated['payment_reference'] ?? null,
                 'payment_proof'     => $paymentProofPath,
+                'mesa_id'           => $validated['mesa_id'] ?? null,
                 'status'            => 'pending',
             ]);
 
@@ -152,6 +154,13 @@ class MmaRegistrationController extends Controller
 
         $registration->update($updateData);
 
+        // Actualizar estado de la mesa asociada
+        if ($registration->mesa) {
+            $registration->mesa->update([
+                'estado' => $isApproval ? 'ocupada' : 'disponible',
+            ]);
+        }
+
         // Guardar notificación de WhatsApp para el cliente (se envía manualmente desde el admin)
         WhatsappMessageService::logNotification(
             $registration,
@@ -179,6 +188,10 @@ class MmaRegistrationController extends Controller
 
     public function destroy(MmaRegistration $registration)
     {
+        if ($registration->mesa) {
+            $registration->mesa->update(['estado' => 'disponible']);
+        }
+
         $registration->delete();
         return back()->with('success', 'Registro eliminado exitosamente.');
     }
