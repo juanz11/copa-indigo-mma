@@ -594,7 +594,7 @@
 <section class="hero" id="inicio">
     <div class="hero-bg"></div>
     <div class="hero-badge">🥊 1era Edición · Valencia, Venezuela</div>
-    <h1>COPA <span class="accent">ÍNDIGO</span><br>MMA</h1>
+    <h1>COPA <span class="accent">ÍNDIGO</span> MMA</h1>
     <p class="hero-subtitle">Acción · Técnica · Legado</p>
     <p class="hero-desc">
         Llega a Valencia la 1era Edición de la Copa Índigo MMA, un espectáculo deportivo de alto nivel donde la adrenalina y la competencia se unen con un propósito claro: rendir homenaje al <strong>ÍNDIGO, David Brandt</strong> 💙🕊️
@@ -606,7 +606,7 @@
     </div>
     <div class="hero-actions">
         <a href="{{ route('mapa.index') }}" class="btn-primary" style="text-decoration:none;"><i class="fas fa-chair"></i> Reservar Mesa</a>
-        <button class="btn-secondary" onclick="openModal('vip')"><i class="fas fa-ticket-alt"></i> Asegurar mi Entrada</button>
+        <a href="{{ route('mapa.index') }}" class="btn-secondary" style="text-decoration:none;"><i class="fas fa-ticket-alt"></i> Asegurar mi Entrada</a>
         <a href="#evento" class="btn-outline"><i class="fas fa-info-circle"></i> Más Información</a>
     </div>
     <div class="hero-scroll"><i class="fas fa-chevron-down"></i> Descubre</div>
@@ -732,7 +732,7 @@
                     <li><i class="fas fa-check-circle"></i> Tribuna general</li>
                     <li><i class="fas fa-check-circle"></i> Experiencia MMA completa</li>
                 </ul>
-                <button class="ticket-btn" onclick="openModal('general')">Comprar Entrada</button>
+                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
             </div>
 
             <!-- VIP -->
@@ -746,7 +746,7 @@
                     <li><i class="fas fa-check-circle"></i> Acceso prioritario</li>
                     <li><i class="fas fa-check-circle"></i> Experiencia premium</li>
                 </ul>
-                <button class="ticket-btn" onclick="openModal('vip')">Comprar VIP</button>
+                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
             </div>
 
             <!-- Ringside -->
@@ -759,7 +759,7 @@
                     <li><i class="fas fa-check-circle"></i> Consumición premium</li>
                     <li><i class="fas fa-check-circle"></i> Meet & Greet con atletas</li>
                 </ul>
-                <button class="ticket-btn" onclick="openModal('ringside')">Comprar Ringside</button>
+                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
             </div>
 
             <!-- Mesa -->
@@ -933,8 +933,10 @@
 
 @section('scripts')
 <script>
-    const PRICES = { general: 30, vip: 60, ringside: 100 };
-    const LABELS = { general: 'Entrada General — $30 USD', vip: 'Entrada VIP — $60 USD', ringside: 'Entrada Ringside — $100 USD' };
+    const PRICES = { general: 30, vip: 60, ringside: 100, mesa: 120 };
+    const LABELS = { general: 'Entrada General — $30 USD', vip: 'Entrada VIP — $60 USD', ringside: 'Entrada Ringside — $100 USD', mesa: 'Mesa — $120 USD' };
+    const MESA_NUMERO = '{{ request('numero') }}';
+    const OPEN_MODAL = {{ request('open_modal') ? 'true' : 'false' }};
     const isLoggedIn = @json(auth()->check());
 
     let currentType = 'general';
@@ -946,8 +948,15 @@
         }
         currentType = type;
         document.getElementById('ticket_type').value = type;
-        document.getElementById('modalTicketLabel').textContent = LABELS[type];
-        document.getElementById('price-hint').textContent = 'Precio: $' + PRICES[type] + ' USD por persona';
+
+        if (type === 'mesa' && MESA_NUMERO) {
+            document.getElementById('modalTicketLabel').textContent = 'Mesa #' + MESA_NUMERO + ' — $' + PRICES.mesa + ' USD';
+            document.getElementById('price-hint').textContent = 'Precio: $' + PRICES.mesa + ' USD por mesa';
+        } else {
+            document.getElementById('modalTicketLabel').textContent = LABELS[type] || LABELS['general'];
+            document.getElementById('price-hint').textContent = 'Precio: $' + (PRICES[type] || 30) + ' USD por persona';
+        }
+
         updateTotal();
         document.getElementById('registroModal').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1110,6 +1119,11 @@
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-check"></i> Confirmar Registro';
         });
+    }
+
+    // Abrir modal automáticamente si se viene del mapa con una mesa reservada
+    if (OPEN_MODAL) {
+        openModal('mesa');
     }
 </script>
 @endsection

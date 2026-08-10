@@ -36,8 +36,8 @@ class MapaController extends Controller
                 'success'    => true,
                 'mesa_id'    => $mesa->id,
                 'numero'     => $mesa->numero,
-                'redirect'   => route('home', ['mesa_id' => $mesa->id]),
-                'message'    => 'Mesa #' . $mesa->numero . ' reservada. Continúa con el registro.',
+                'redirect'   => route('home', ['mesa_id' => $mesa->id, 'numero' => $mesa->numero, 'open_modal' => 1]),
+                'message'    => 'Mesa #' . $mesa->numero . ' reservada. Completa el pago.',
             ]);
         });
     }
