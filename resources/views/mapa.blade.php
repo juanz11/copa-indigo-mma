@@ -273,6 +273,8 @@
         const disponibles = capacidad - vendidas;
         const puedeCompleta = vendidas === 0;
         const numero = elemento.getAttribute('data-numero');
+        const esVip = parseInt(numero) <= 14;
+        const precio = esVip ? 60 : 50;
 
         panel.innerHTML = `
             <div style="margin-bottom:0.75rem;">
@@ -281,11 +283,7 @@
             </div>
             <p class="info-sillas">Sillas vendidas: <strong>${vendidas}/${capacidad}</strong>. Disponibles: <strong>${disponibles}</strong></p>
 
-            <label style="display:block;color:var(--gold);margin-bottom:0.5rem;font-size:0.9rem;font-weight:500;">Tipo de Mesa</label>
-            <div class="selector-tipo">
-                <label><input type="radio" name="tipo-mesa" value="mesa_general" checked onchange="calcularTotal()"> General — $50/silla</label>
-                <label><input type="radio" name="tipo-mesa" value="mesa_vip" onchange="calcularTotal()"> VIP — $60/silla</label>
-            </div>
+            <p class="info-sillas">Tipo: <strong>${esVip ? 'VIP' : 'General'}</strong> — $${precio}/silla</p>
 
             <label style="display:block;color:var(--gold);margin-bottom:0.5rem;font-size:0.9rem;font-weight:500;">Cantidad de Sillas</label>
             <div class="cantidad-control">
@@ -299,7 +297,7 @@
 
             <div class="total-box">
                 <span>Total a pagar</span>
-                <span class="amount" id="total-display">$50.00 USD</span>
+                <span class="amount" id="total-display">$${(1 * precio).toFixed(2)} USD</span>
             </div>
 
             <a href="#" class="btn-mesa btn-continuar" id="btn-continuar" onclick="return continuarRegistro()">Continuar Registro</a>
@@ -338,8 +336,8 @@
         const input = document.getElementById('cantidad');
         if (!input) return;
         const qty = parseInt(input.value) || 1;
-        const tipo = document.querySelector('input[name="tipo-mesa"]:checked')?.value || 'mesa_general';
-        const precio = tipo === 'mesa_vip' ? 60 : 50;
+        const esVip = parseInt(mesaSeleccionadaNumero) <= 14;
+        const precio = esVip ? 60 : 50;
         const total = (qty * precio).toFixed(2);
         document.getElementById('total-display').textContent = '$' + total + ' USD';
     }
@@ -351,19 +349,16 @@
         }
 
         const input = document.getElementById('cantidad');
-        const tipo = document.querySelector('input[name="tipo-mesa"]:checked');
-        if (!input || !tipo) {
-            showAlert('Completa el tipo de mesa y la cantidad.', 'error');
+        if (!input) {
+            showAlert('Indica la cantidad de sillas.', 'error');
             return false;
         }
 
         const cantidad = input.value;
-        const tipoValue = tipo.value;
 
         const base = '{{ route("mma.registro") }}';
         const url = base + '?mesa_id=' + encodeURIComponent(mesaSeleccionadaId) +
                     '&numero=' + encodeURIComponent(mesaSeleccionadaNumero) +
-                    '&tipo=' + encodeURIComponent(tipoValue) +
                     '&cantidad=' + encodeURIComponent(cantidad);
 
         window.location.href = url;

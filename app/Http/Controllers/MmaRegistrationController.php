@@ -57,6 +57,11 @@ class MmaRegistrationController extends Controller
                 $mesa->update([
                     'estado' => ($vendidas + $validated['quantity'] >= $mesa->capacidad) ? 'ocupada' : 'reservada',
                 ]);
+
+                // El tipo depende del número de mesa: 1-14 VIP, 15-25 General
+                $validated['ticket_type'] = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
+                $precio = $validated['ticket_type'] === 'mesa_vip' ? 60 : 50;
+                $validated['total_amount'] = $validated['quantity'] * $precio;
             }
 
             $paymentProofPath = null;
@@ -145,9 +150,8 @@ class MmaRegistrationController extends Controller
         $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
         $disponibles = max(0, $mesa->capacidad - $vendidas);
 
-        $tipo = in_array($validated['tipo'] ?? '', ['mesa_general', 'mesa_vip'])
-            ? $validated['tipo']
-            : 'mesa_general';
+        // Las mesas del 1 al 14 son VIP, del 15 al 25 son General
+        $tipo = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
 
         $cantidad = min(max((int) ($validated['cantidad'] ?? 1), 1), $disponibles);
         $precio = $tipo === 'mesa_vip' ? 60 : 50;
