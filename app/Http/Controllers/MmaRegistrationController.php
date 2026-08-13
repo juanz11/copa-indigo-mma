@@ -210,8 +210,9 @@ class MmaRegistrationController extends Controller
 
         // Actualizar estado de la mesa asociada
         if ($registration->mesa) {
+            $vendidas = (int) ($registration->mesa->registrations()->sum('quantity') ?? 0);
             $registration->mesa->update([
-                'estado' => $isApproval ? 'ocupada' : 'disponible',
+                'estado' => $vendidas >= $registration->mesa->capacidad ? 'ocupada' : ($vendidas > 0 ? 'reservada' : 'disponible'),
             ]);
         }
 
@@ -242,11 +243,16 @@ class MmaRegistrationController extends Controller
 
     public function destroy(MmaRegistration $registration)
     {
-        if ($registration->mesa) {
-            $registration->mesa->update(['estado' => 'disponible']);
+        $mesa = $registration->mesa;
+        $registration->delete();
+
+        if ($mesa) {
+            $vendidas = (int) ($mesa->registrations()->sum('quantity') ?? 0);
+            $mesa->update([
+                'estado' => $vendidas >= $mesa->capacidad ? 'ocupada' : ($vendidas > 0 ? 'reservada' : 'disponible'),
+            ]);
         }
 
-        $registration->delete();
         return back()->with('success', 'Registro eliminado exitosamente.');
     }
 
