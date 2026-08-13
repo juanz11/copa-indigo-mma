@@ -81,6 +81,10 @@
                 <span class="ticket-value">{{ ucfirst($registration->ticket_type) }}</span>
             </div>
             <div class="ticket-row">
+                <span class="ticket-label">Mesa</span>
+                <span class="ticket-value">{{ $registration->mesa ? '#' . $registration->mesa->numero : 'N/A' }}</span>
+            </div>
+            <div class="ticket-row">
                 <span class="ticket-label">Cantidad</span>
                 <span class="ticket-value">{{ $registration->quantity }}</span>
             </div>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tu entrada — Copa Índigo MMA</title>
     <style>
-        body { margin: 0; padding: 0; background: #0a0a0a; font-family: 'Inter', Arial, sans-serif; color: #e0e0e0; }
+        body { margin: 0; padding: 0; background: #0a0a0a; font-family: 'Inter', Arial, sans-serif; color: #D4AF37; }
         .wrapper { width: 100%; max-width: 600px; margin: 0 auto; background: #141414; border: 1px solid #2a2a2a; }
         .header { background: linear-gradient(135deg, #001a4d, #0a0a0a); padding: 2rem; text-align: center; }
         .header h1 { color: #D4AF37; font-family: 'Bebas Neue', Impact, sans-serif; letter-spacing: 3px; margin: 0; font-size: 1.8rem; }

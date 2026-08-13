@@ -9,7 +9,7 @@ class TicketController extends Controller
     public function show(string $token)
     {
         $registration = MmaRegistration::where('ticket_token', $token)
-            ->with('approver')
+            ->with(['approver', 'mesa'])
             ->first();
 
         $ticketUrl = $registration ? route('ticket.show', $token) : '';
