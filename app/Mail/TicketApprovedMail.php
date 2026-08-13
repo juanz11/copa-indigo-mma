@@ -27,7 +27,8 @@ class TicketApprovedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🎟️ Tu entrada para Copa Índigo MMA fue aprobada',
+            from: new \Illuminate\Mail\Mailables\Address(config('mail.from.address'), 'Copa Índigo MMA'),
+            subject: 'Tu entrada para Copa Índigo MMA fue aprobada',
         );
     }
 

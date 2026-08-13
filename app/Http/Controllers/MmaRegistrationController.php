@@ -207,6 +207,7 @@ class MmaRegistrationController extends Controller
         }
 
         $registration->update($updateData);
+        $registration->refresh();
 
         // Actualizar estado de la mesa asociada
         if ($registration->mesa) {
@@ -223,22 +224,41 @@ class MmaRegistrationController extends Controller
         );
 
         // Enviar correo con QR al aprobar
-        if ($isApproval && $registration->email) {
-            try {
-                $adminEmail = config('mail.from.address');
-                Mail::to($registration->email)
-                    ->bcc($adminEmail)
-                    ->send(new TicketApprovedMail($registration));
-            } catch (\Exception $e) {
-                Log::warning('No se pudo enviar correo de aprobación', [
+        $mailError = null;
+        if ($isApproval) {
+            $recipient = $registration->email ?: $registration->user?->email;
+            if ($recipient) {
+                try {
+                    Mail::to($recipient)
+                        ->send(new TicketApprovedMail($registration));
+                    Log::info('Correo de aprobación enviado correctamente', [
+                        'registration_id' => $registration->id,
+                        'recipient'       => $recipient,
+                    ]);
+                } catch (\Exception $e) {
+                    $mailError = $e->getMessage();
+                    Log::warning('No se pudo enviar correo de aprobación', [
+                        'registration_id' => $registration->id,
+                        'recipient'       => $recipient,
+                        'error'           => $mailError,
+                    ]);
+                }
+            } else {
+                $mailError = 'No hay correo en el registro ni en la cuenta de usuario.';
+                Log::warning('No se pudo enviar correo de aprobación: sin destinatario', [
                     'registration_id' => $registration->id,
-                    'error' => $e->getMessage(),
                 ]);
             }
         }
 
         $statusText = $isApproval ? 'aprobado' : 'rechazado';
-        return back()->with('success', "Registro {$statusText}. Correo con QR enviado al cliente y copia al admin.");
+        $message = "Registro {$statusText}.";
+        if ($isApproval) {
+            $message .= $mailError
+                ? ' No se pudo enviar el correo con QR: ' . $mailError
+                : ' Correo con QR enviado al cliente y copia al admin.';
+        }
+        return back()->with('success', $message);
     }
 
     public function destroy(MmaRegistration $registration)
