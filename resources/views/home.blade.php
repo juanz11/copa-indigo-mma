@@ -364,23 +364,27 @@
 
     /* ===== CONTACT ===== */
     .contact-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.5rem;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
         margin-top: 3rem;
     }
     .contact-card {
         background: var(--dark-3);
         border: 1px solid rgba(255,255,255,0.06);
         border-radius: 12px;
-        padding: 1.5rem;
+        padding: 1rem;
         text-align: center;
         transition: border-color 0.3s;
+        flex: 0 0 auto;
+        min-width: fit-content;
     }
     .contact-card:hover { border-color: rgba(212,175,55,0.3); }
     .contact-card i { font-size: 1.75rem; color: var(--gold); margin-bottom: 0.75rem; display: block; }
     .contact-card h3 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #fff; margin-bottom: 0.5rem; }
-    .contact-card p, .contact-card a { color: var(--text-muted); font-size: 0.9rem; display: block; }
+    .contact-card p, .contact-card a { color: var(--text-muted); font-size: 0.9rem; display: block; white-space: nowrap; }
     .contact-card a:hover { color: var(--gold); }
 
     /* ===== MODAL ===== */
@@ -575,7 +579,7 @@
         font-weight: 700;
         font-size: 0.95rem;
         letter-spacing: 1px;
-        text-transform: uppercase;
+        text-transform: none;
         transition: color 0.2s;
     }
     .sponsors-list a:hover { color: var(--gold); }
@@ -606,7 +610,6 @@
     </div>
     <div class="hero-actions">
         <a href="{{ route('mapa.index') }}" class="btn-primary" style="text-decoration:none;"><i class="fas fa-chair"></i> Reservar Mesa</a>
-        <a href="{{ route('mapa.index') }}" class="btn-secondary" style="text-decoration:none;"><i class="fas fa-ticket-alt"></i> Asegurar mi Entrada</a>
         <a href="#evento" class="btn-outline"><i class="fas fa-info-circle"></i> Más Información</a>
     </div>
     <div class="hero-scroll"><i class="fas fa-chevron-down"></i> Descubre</div>
@@ -628,7 +631,7 @@
         <div class="evento-layout">
             <div>
                 <p class="section-tag">⚡ El Evento</p>
-                <h2 class="section-title">Un evento. Un propósito.<br><span class="accent">Un legado.</span></h2>
+                <h2 class="section-title">Un evento. Un propósito. <span class="accent">Un legado.</span></h2>
                 <p class="section-text">
                     Más que una cartelera de combates, hemos diseñado un gran evento pensado para que los verdaderos fanáticos de las MMA disfruten de un show sin precedentes. Celebraremos este deporte tal como él lo vivía: <strong>dándolo todo hasta el último segundo.</strong>
                 </p>
@@ -651,7 +654,7 @@
                     <div class="event-card">
                         <div class="event-card-icon">💙</div>
                         <h3>El Propósito</h3>
-                        <p>Rendir homenaje a <strong>David Brandt — El Índigo</strong>, un guerrero que lo dio todo dentro y fuera del octágono.</p>
+                        <p>Rendir homenaje a <strong>David Brandt — El Índigo</strong>, un guerrero que lo dio todo dentro y fuera del octágono, fortaleciendo lazos y la operatividad de la Fundación David Brandt para continuar el desarrollo y apoyo en brindar la asistencia en materia de Salud Mental en Venezuela a través de los programas de Responsabilidad Social.</p>
                     </div>
                 </div>
             </div>
@@ -670,13 +673,13 @@
         </div>
         <div class="legacy-content">
             <p class="section-tag">💙 En su memoria</p>
-            <h2 class="section-title" style="margin-bottom:1.5rem;">Un homenaje que<br><span class="accent">trasciende el deporte.</span></h2>
+            <h2 class="section-title" style="margin-bottom:1.5rem; line-height:1.2;">Un homenaje que<br><span class="accent">trasciende el deporte.</span></h2>
             <blockquote>
-                Más que un luchador, fue un guerrero que vivió las MMA con el alma. Este evento es para él, por él y gracias a todo lo que nos enseñó dentro del octágono.
+                Más que un luchador, fue un guerrero que vivió las MMA con el alma. Este evento es para él, por él y gracias a todo lo que nos enseñó dentro y fuera del octágono.
             </blockquote>
             <p class="legacy-name">DAVID BRANDT</p>
             <p class="legacy-sub">El Índigo · Siempre en nuestros corazones 🕊️</p>
-            <div style="margin-top:2rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <div style="margin-top:2rem; display:flex; gap:0.5rem; flex-wrap:nowrap; justify-content:center;">
                 <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#CopaÍndigoMMA</span>
                 <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#DavidBrandt</span>
                 <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#FundaciónDavidBrandt</span>
@@ -690,40 +693,40 @@
 <section class="section tickets-section" id="entradas">
     <div class="section-inner">
         <p class="section-tag">🎟️ Entradas</p>
-        <h2 class="section-title">Asegura tu acceso a esta<br><span class="accent">noche histórica</span></h2>
+        <h2 class="section-title">Asegura tu acceso a esta <span class="accent">noche histórica</span></h2>
         <p class="section-text">Reserva una mesa para ti, tu familia o grupo. Cada mesa tiene 8 sillas.</p>
         <div class="tickets-grid">
             <!-- Mesa General -->
             <div class="ticket-card">
-                <p class="ticket-type">Mesa General</p>
-                <p class="ticket-price">$50 <span>USD / silla</span></p>
-                <p style="color:var(--gold);font-size:0.9rem;margin-top:-0.5rem;margin-bottom:1rem;">Mesa completa: $400 USD</p>
+                <p class="ticket-type">MESA GENERAL</p>
+                <p class="ticket-price">50 <span>USD / Silla</span></p>
+                <div style="background:rgba(0,0,0,0.25); border:1px solid rgba(212,175,55,0.25); border-radius:8px; padding:0.75rem; margin-top:-0.5rem; margin-bottom:1rem; text-align:left;">
+                    <p style="color:var(--gold);font-size:0.95rem;font-weight:600;margin:0 0 0.5rem 0;">Mesa Completa: 400 USD</p>
+                    <p style="color:var(--text);font-size:0.85rem;margin:0 0 0.5rem 0;line-height:1.4;">Por la compra de la Mesa Completa (8 Sillas), te incluye 1 servicio de Ron o Vodka + 1 Ración de Tequeños.</p>
+                    <p style="color:var(--text);font-size:0.85rem;margin:0;line-height:1.4;">Si deseas adquirir una mesa parcial, por ejemplo 4 sillas, solo obtienes el acceso al mesa y el consumo es aparte, es decir, no incluye el servicio de Mesa Completa.</p>
+                </div>
                 <ul class="ticket-perks">
-                    <li><i class="fas fa-check-circle"></i> Hasta 8 sillas</li>
-                    <li><i class="fas fa-check-circle"></i> Mesa completa: 1 servicio de Ron y/o Vodka</li>
-                    <li><i class="fas fa-check-circle"></i> Mesa completa: 1 ración de Tequeños</li>
                 </ul>
                 <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
             </div>
 
             <!-- Mesa VIP -->
             <div class="ticket-card featured">
-                <div class="ticket-badge">⭐ Más Popular</div>
-                <p class="ticket-type">Mesa VIP</p>
-                <p class="ticket-price">$60 <span>USD / silla</span></p>
-                <p style="color:var(--gold);font-size:0.9rem;margin-top:-0.5rem;margin-bottom:1rem;">Mesa completa: $480 USD</p>
-                <ul class="ticket-perks">
-                    <li><i class="fas fa-check-circle"></i> Hasta 8 sillas</li>
-                    <li><i class="fas fa-check-circle"></i> Mesa completa: 1 servicio de Whisky</li>
-                    <li><i class="fas fa-check-circle"></i> Mesa completa: 2 raciones de Tequeños</li>
-                </ul>
+                <p class="ticket-type">MESA V.I.P.</p>
+                <p class="ticket-price">60 <span>USD / Silla</span></p>
+                <div style="background:rgba(0,0,0,0.25); border:1px solid rgba(212,175,55,0.25); border-radius:8px; padding:0.75rem; margin-top:-0.5rem; margin-bottom:1rem; text-align:left;">
+                    <p style="color:var(--gold);font-size:0.95rem;font-weight:600;margin:0 0 0.5rem 0;">Mesa Completa: 480 USD</p>
+                    <p style="color:var(--text);font-size:0.85rem;margin:0 0 0.5rem 0;line-height:1.4;">Por la compra de la Mesa Completa (8 Sillas), te incluye 1 servicio de Whisky + 2 Raciones de Tequeños.</p>
+                    <p style="color:var(--text);font-size:0.85rem;margin:0;line-height:1.4;">Si deseas adquirir una mesa parcial, por ejemplo 4 sillas, solo obtienes el acceso al mesa y el consumo es aparte, es decir, no incluye el servicio de Mesa Completa.</p>
+                </div>
+               
                 <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
             </div>
         </div>
 
         <p style="text-align:center;margin-top:2rem;color:var(--text-muted);font-size:0.85rem;">
             <i class="fas fa-info-circle" style="color:var(--gold);"></i>
-            Los pagos se realizan por transferencia, Pago Móvil, Zelle o efectivo. Te contactaremos para confirmar tu registro.
+            Los pagos se realizan por Transferencia y/o Pago Móvil a la Tasa Referencial de Euro del BCV a las cuentas de la Fundación David Brandt.
         </p>
     </div>
 </section>
@@ -748,8 +751,7 @@
             <div class="contact-card">
                 <i class="fab fa-instagram"></i>
                 <h3>Instagram</h3>
-                <a href="https://instagram.com/julio_brandt" target="_blank">@julio_brandt</a>
-                <a href="https://instagram.com/sncpharma" target="_blank">@sncpharma</a>
+                <a href="https://www.instagram.com/copaindigomma/" target="_blank">@copaindigomma</a>
             </div>
             <div class="contact-card">
                 <i class="fab fa-youtube" style="color:#ff4444;"></i>
@@ -800,11 +802,11 @@
                         <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:0.5rem;">
                             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
                                 <input type="radio" name="table_type_radio" value="mesa_general" checked onchange="setTableType(this.value)">
-                                <span>General — $50/silla ($400 mesa completa)</span>
+                                <span>General — $50/Silla ($400 Mesa Completa)</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;">
                                 <input type="radio" name="table_type_radio" value="mesa_vip" onchange="setTableType(this.value)">
-                                <span>VIP — $60/silla ($480 mesa completa)</span>
+                                <span>VIP — $60/Silla ($480 Mesa Completa)</span>
                             </label>
                         </div>
                         <p class="form-hint" id="mesa-benefits" style="display:none;margin-top:0.5rem;color:var(--gold);"></p>
@@ -813,13 +815,13 @@
                     <div class="form-group" id="quantity-group">
                         <label>Cantidad de Sillas *</label>
                         <input type="number" name="quantity" id="quantity" value="1" min="1" max="8" required>
-                        <p class="form-hint" id="price-hint">Precio: $50 USD por silla</p>
-                        <button type="button" class="ticket-btn" style="margin-top:0.75rem;" onclick="comprarMesaCompleta()">Comprar mesa completa (8 sillas)</button>
+                        <p class="form-hint" id="price-hint">Precio: 50 USD por Silla</p>
+                        <button type="button" class="ticket-btn" style="margin-top:0.75rem;" onclick="comprarMesaCompleta()">Comprar Mesa Completa (8 Sillas)</button>
                     </div>
 
                     <div class="form-total-box">
                         <span class="label">Total a Pagar</span>
-                        <span class="amount" id="total-display">$50.00 USD</span>
+                        <span class="amount" id="total-display">50.00 USD</span>
                     </div>
                 </div>
 
@@ -854,7 +856,7 @@
 
                     <div class="payment-info">
                         <strong>💳 Métodos de Pago Disponibles:</strong>
-                        Transferencia Mercantil · Pago Móvil Mercantil · Efectivo
+                        Transferencia Mercantil · Pago Móvil Mercantil
                     </div>
 
                     <div class="form-group">
@@ -863,7 +865,6 @@
                             <option value="">Selecciona un método</option>
                             <option value="transferencia">Transferencia Mercantil</option>
                             <option value="pago_movil">Pago Móvil Mercantil</option>
-                            <option value="efectivo">Efectivo</option>
                         </select>
                     </div>
 
@@ -930,7 +931,7 @@
 @section('scripts')
 <script>
     const PRICES = { general: 30, vip: 60, ringside: 100, mesa_general: 50, mesa_vip: 60 };
-    const LABELS = { general: 'Entrada General — $30 USD', vip: 'Entrada VIP — $60 USD', ringside: 'Entrada Ringside — $100 USD', mesa_general: 'Mesa General — $50 USD/silla', mesa_vip: 'Mesa VIP — $60 USD/silla' };
+    const LABELS = { general: 'Entrada General — 30 USD', vip: 'Entrada VIP — 60 USD', ringside: 'Entrada Ringside — 100 USD', mesa_general: 'Mesa General — 50 USD/Silla', mesa_vip: 'Mesa VIP — 60 USD/Silla' };
     const MESA_NUMERO = '{{ request('numero') }}';
     const OPEN_MODAL = {{ request('open_modal') ? 'true' : 'false' }};
     const isLoggedIn = @json(auth()->check());
@@ -991,7 +992,7 @@
         document.getElementById('resumen-mesa').textContent = mesa;
         document.getElementById('resumen-tipo').textContent = tipo;
         document.getElementById('resumen-sillas').textContent = qty;
-        document.getElementById('resumen-total').textContent = '$' + total + ' USD';
+        document.getElementById('resumen-total').textContent = total + ' USD';
     }
 
     function openModal(type) {
@@ -1044,7 +1045,7 @@
             document.getElementById('modalTicketLabel').textContent = LABELS[type] || LABELS['general'];
         }
 
-        document.getElementById('price-hint').textContent = 'Precio: $' + (PRICES[type] || 30) + ' USD por silla';
+        document.getElementById('price-hint').textContent = 'Precio: ' + (PRICES[type] || 30) + ' USD por Silla';
         updateTotal();
     }
 
@@ -1059,10 +1060,10 @@
         if (!benefits) return;
 
         if (currentType === 'mesa_general' && qty >= 8) {
-            benefits.textContent = 'Mesa completa: incluye 1 servicio de Ron y/o Vodka + 1 ración de Tequeños.';
+            benefits.textContent = 'Mesa Completa: incluye 1 servicio de Ron y/o Vodka + 1 ración de Tequeños.';
             benefits.style.display = 'block';
         } else if (currentType === 'mesa_vip' && qty >= 8) {
-            benefits.textContent = 'Mesa completa: incluye 1 servicio de Whisky + 2 raciones de Tequeños.';
+            benefits.textContent = 'Mesa Completa: incluye 1 servicio de Whisky + 2 raciones de Tequeños.';
             benefits.style.display = 'block';
         } else {
             benefits.style.display = 'none';
@@ -1074,7 +1075,7 @@
         const price = PRICES[currentType] || 30;
         const total = (qty * price).toFixed(2);
         document.getElementById('total_amount').value = total;
-        document.getElementById('total-display').textContent = '$' + total + ' USD';
+        document.getElementById('total-display').textContent = total + ' USD';
         updateMesaBenefits();
     }
 
@@ -1152,7 +1153,7 @@
     document.getElementById('payment_method').addEventListener('change', function () {
         const ref = document.getElementById('payment_reference');
         const group = document.getElementById('reference-group');
-        if (this.value === 'efectivo' || this.value === '') {
+        if (this.value === '') {
             ref.required = false;
             group.style.opacity = '0.5';
         } else {

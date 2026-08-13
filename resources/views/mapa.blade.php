@@ -244,7 +244,7 @@
         const estado = elemento.getAttribute('data-estado');
 
         if (estado === 'ocupada' || vendidas >= capacidad) {
-            showAlert('La mesa #' + numero + ' está completa.', 'error');
+            showAlert('La mesa #' + numero + ' está Completa.', 'error');
             return;
         }
 
@@ -292,21 +292,21 @@
                 <button type="button" onclick="cambiarCantidad(1)">+</button>
             </div>
 
-            <button type="button" class="btn-mesa btn-full" id="btn-completa" onclick="comprarCompleta(${disponibles})" ${puedeCompleta ? '' : 'disabled'}>Comprar mesa completa (${disponibles} sillas)</button>
-            <p id="msg-completa" class="info-sillas" style="display:${puedeCompleta ? 'none' : 'block'};">No puedes comprar la mesa completa porque ya se vendieron sillas.</p>
+            <button type="button" class="btn-mesa btn-full" id="btn-completa" onclick="comprarCompleta(${disponibles})" ${puedeCompleta ? '' : 'disabled'}>Comprar Mesa Completa (${disponibles} Sillas)</button>
+            <p id="msg-completa" class="info-sillas" style="display:${puedeCompleta ? 'none' : 'block'};">No puedes comprar la Mesa Completa porque ya se vendieron Sillas.</p>
 
             <div class="promo-leyenda" style="margin-top:0.75rem;padding:0.5rem;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;font-size:0.85rem;color:#e0e0e0;">
-                <strong style="color:var(--gold);display:block;margin-bottom:0.25rem;">Promoción al comprar mesa completa:</strong>
+                <strong style="color:var(--gold);display:block;margin-bottom:0.25rem;">Promoción al comprar Mesa Completa:</strong>
                 <ul style="margin:0;padding-left:1rem;list-style:disc;">
                     ${esVip
-                        ? '<li>1 Servicio Whisky</li><li>2 Raciones de Tequeños</li>'
-                        : '<li>1 Servicio de Ron y/o Vodka</li><li>1 Ración de Tequeños</li>'}
+                        ? '<li>1 Servicio Whisky + 2 Raciones de Tequeños</li>'
+                        : '<li>1 Servicio de Ron y/o Vodka + 1 Ración de Tequeños</li>'}
                 </ul>
             </div>
 
             <div class="total-box">
                 <span>Total a pagar</span>
-                <span class="amount" id="total-display">$${(1 * precio).toFixed(2)} USD</span>
+                <span class="amount" id="total-display">${(1 * precio).toFixed(2)} USD</span>
             </div>
 
             <a href="#" class="btn-mesa btn-continuar" id="btn-continuar" onclick="return continuarRegistro()">Continuar Registro</a>
@@ -348,7 +348,7 @@
         const esVip = parseInt(mesaSeleccionadaNumero) <= 14;
         const precio = esVip ? 60 : 50;
         const total = (qty * precio).toFixed(2);
-        document.getElementById('total-display').textContent = '$' + total + ' USD';
+        document.getElementById('total-display').textContent = total + ' USD';
     }
 
     function continuarRegistro() {
@@ -359,7 +359,7 @@
 
         const input = document.getElementById('cantidad');
         if (!input) {
-            showAlert('Indica la cantidad de sillas.', 'error');
+            showAlert('Indica la cantidad de Sillas.', 'error');
             return false;
         }
 

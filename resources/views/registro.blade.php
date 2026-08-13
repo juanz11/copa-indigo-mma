@@ -134,7 +134,7 @@
             </div>
             <div class="resumen-item">
                 <strong>Total</strong>
-                <span>${{ number_format($total, 2) }} USD</span>
+                <span>{{ number_format($total, 2) }} USD</span>
             </div>
         </div>
 
@@ -178,7 +178,7 @@
 
                 <div class="payment-info">
                     <strong>💳 Métodos de Pago Disponibles:</strong>
-                    Transferencia Mercantil · Pago Móvil Mercantil · Efectivo
+                    Transferencia Mercantil · Pago Móvil Mercantil
                 </div>
 
                 <div class="form-group">
@@ -187,7 +187,6 @@
                         <option value="">Selecciona un método</option>
                         <option value="transferencia" {{ old('payment_method') == 'transferencia' ? 'selected' : '' }}>Transferencia Mercantil</option>
                         <option value="pago_movil" {{ old('payment_method') == 'pago_movil' ? 'selected' : '' }}>Pago Móvil Mercantil</option>
-                        <option value="efectivo" {{ old('payment_method') == 'efectivo' ? 'selected' : '' }}>Efectivo</option>
                     </select>
                 </div>
 
@@ -297,7 +296,7 @@
     document.getElementById('payment_method').addEventListener('change', function () {
         const ref = document.getElementById('payment_reference');
         const group = document.getElementById('reference-group');
-        if (this.value === 'efectivo' || this.value === '') {
+        if (this.value === '') {
             ref.required = false;
             group.style.opacity = '0.5';
         } else {

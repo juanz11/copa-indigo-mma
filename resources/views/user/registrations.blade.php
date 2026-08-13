@@ -87,7 +87,7 @@
                                 </div>
                                 <div>
                                     <span>Total</span>
-                                    <strong>${{ number_format($reg->total_amount, 2) }} USD</strong>
+                                    <strong>{{ number_format($reg->total_amount, 2) }} USD</strong>
                                 </div>
                                 <div>
                                     <span>Fecha</span>

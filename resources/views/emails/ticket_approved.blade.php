@@ -32,7 +32,7 @@
             <div class="details">
                 <p><strong>Entrada:</strong> {{ ucfirst($registration->ticket_type) }}</p>
                 <p><strong>Cantidad:</strong> {{ $registration->quantity }}</p>
-                <p><strong>Total pagado:</strong> ${{ number_format($registration->total_amount, 2) }} USD</p>
+                <p><strong>Total pagado:</strong> {{ number_format($registration->total_amount, 2) }} USD</p>
                 <p><strong>Evento:</strong> Sábado 24 de Octubre, 8:00 p.m.</p>
                 <p><strong>Lugar:</strong> Hotel Hesperia Valencia</p>
             </div>

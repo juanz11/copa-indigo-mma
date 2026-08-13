@@ -86,7 +86,7 @@
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Total</span>
-                <span class="ticket-value">${{ number_format($registration->total_amount, 2) }} USD</span>
+                <span class="ticket-value">{{ number_format($registration->total_amount, 2) }} USD</span>
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Teléfono</span>

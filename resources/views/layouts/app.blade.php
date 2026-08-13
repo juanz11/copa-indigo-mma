@@ -109,22 +109,28 @@
         }
         .footer-logo-wrap {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 0.75rem;
+            justify-content: center;
+            gap: 0.6rem;
             margin-bottom: 1rem;
         }
         .footer-logo-img {
-            height: 80px;
+            height: 44px;
             width: auto;
-            filter: drop-shadow(0 0 12px rgba(212,175,55,0.4));
+            filter: drop-shadow(0 0 8px rgba(212,175,55,0.5));
+            transition: filter 0.3s;
+        }
+        .footer-logo-wrap:hover .footer-logo-img {
+            filter: drop-shadow(0 0 14px rgba(212,175,55,0.9));
         }
         footer .footer-logo {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: var(--gold);
-            letter-spacing: 3px;
+            letter-spacing: 2px;
+            line-height: 1;
         }
+        footer .footer-logo span { color: #fff; }
         footer p { color: var(--text-muted); font-size: 0.875rem; }
         footer .footer-links {
             display: flex;
@@ -292,8 +298,8 @@
 
     <footer>
         <div class="footer-logo-wrap">
-            <img src="/IMG_0356.PNG" alt="Copa Índigo MMA" class="footer-logo-img">
-            <div class="footer-logo">COPA ÍNDIGO MMA</div>
+            <img src="/IMG_1257.PNG" alt="Copa Índigo MMA" class="footer-logo-img">
+            <div class="footer-logo"><span>COPA </span>ÍNDIGO<span> MMA</span></div>
         </div>
         <p>En honor a David Brandt 💙🕊️</p>
         <div class="footer-links">
@@ -303,7 +309,6 @@
         </div>
         <div class="social-icons">
             <a href="https://www.instagram.com/copaindigomma/" target="_blank" title="@copaindigomma"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.instagram.com/sncpharma" target="_blank" title="@sncpharma"><i class="fab fa-instagram"></i></a>
             <a href="https://wa.me/584242818836" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
             <a href="https://www.youtube.com/@copaindigomma" target="_blank" title="YouTube @copaindigomma" style="border-color:rgba(255,68,68,0.4);color:#ff4444;"><i class="fab fa-youtube"></i></a>
         </div>
