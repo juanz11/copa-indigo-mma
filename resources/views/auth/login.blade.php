@@ -83,7 +83,7 @@
     <div class="login-box">
         <div class="login-logo">
             <h1>COPA <span style="color:#fff;">ÍNDIGO</span> MMA</h1>
-            <p>Panel Administrativo</p>
+         
         </div>
 
         @if($errors->any())

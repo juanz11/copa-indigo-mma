@@ -105,7 +105,18 @@
             </div>
             <div class="form-group">
                 <label>Teléfono *</label>
-                <input type="tel" name="phone" value="{{ old('phone') }}" required placeholder="Ej: 0424-1234567">
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <select name="phone_prefix" required style="width: 35%; background: #111; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; outline: none;">
+                        <option value="" {{ old('phone_prefix') ? '' : 'selected' }}>--</option>
+                        <option value="0414" {{ old('phone_prefix') == '0414' ? 'selected' : '' }}>0414</option>
+                        <option value="0424" {{ old('phone_prefix') == '0424' ? 'selected' : '' }}>0424</option>
+                        <option value="0412" {{ old('phone_prefix') == '0412' ? 'selected' : '' }}>0412</option>
+                        <option value="0422" {{ old('phone_prefix') == '0422' ? 'selected' : '' }}>0422</option>
+                        <option value="0426" {{ old('phone_prefix') == '0426' ? 'selected' : '' }}>0426</option>
+                        <option value="0416" {{ old('phone_prefix') == '0416' ? 'selected' : '' }}>0416</option>
+                    </select>
+                    <input type="tel" name="phone_number" value="{{ old('phone_number') }}" required placeholder="Ej: 1234567" style="width: 65%; background: #111; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; outline: none;">
+                </div>
             </div>
             <div class="form-group">
                 <label>Contraseña</label>

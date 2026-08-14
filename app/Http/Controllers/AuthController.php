@@ -24,9 +24,10 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name'      => 'required|string|max:255',
             'email'     => 'required|email|max:255|unique:users,email',
-            'id_number' => 'required|string|max:50',
-            'phone'     => 'required|string|max:20',
-            'password'  => 'required|string|min:6|confirmed',
+            'id_number'    => 'required|string|max:50',
+            'phone_prefix' => 'required|in:0414,0424,0412,0422,0426,0416',
+            'phone_number' => 'required|digits:7',
+            'password'     => 'required|string|min:6|confirmed',
         ], [
             'email.unique' => 'Este correo ya está registrado.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
@@ -37,7 +38,7 @@ class AuthController extends Controller
             'name'      => $validated['name'],
             'email'     => $validated['email'],
             'id_number' => $validated['id_number'],
-            'phone'     => $validated['phone'],
+            'phone'     => $validated['phone_prefix'] . '-' . $validated['phone_number'],
             'password'  => Hash::make($validated['password']),
             'role'      => 'user',
         ]);
