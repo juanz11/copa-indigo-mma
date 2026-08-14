@@ -78,7 +78,7 @@
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Entrada</span>
-                <span class="ticket-value">{{ ucfirst($registration->ticket_type) }}</span>
+                <span class="ticket-value">{{ ucwords(str_replace('_', ' ', $registration->ticket_type)) }}</span>
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Mesa</span>
