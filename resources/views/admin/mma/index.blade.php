@@ -101,10 +101,10 @@
                                     <span class="badge" style="background:rgba(37,211,102,0.15);color:#25d366;"><i class="fab fa-whatsapp"></i> Enviado</span>
                                 @elseif($notif->status === 'failed')
                                     <span class="badge" style="background:rgba(231,74,59,0.15);color:#e74a3b;"><i class="fab fa-whatsapp"></i> Fallido</span>
-                                    <a href="{{ route('admin.whatsapp.link', $notif) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;margin-top:0.3rem;" title="Reintentar"><i class="fab fa-whatsapp"></i></a>
+                                    <a href="{{ \App\Services\WhatsappMessageService::waLink($reg->phone, \App\Services\WhatsappMessageService::messageForClient($reg, $reg->status === 'approved' ? 'approved' : 'rejected')) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;margin-top:0.3rem;" title="Reintentar"><i class="fab fa-whatsapp"></i></a>
                                 @else
                                     <div class="action-btns" style="gap:0.25rem;justify-content:flex-start;">
-                                        <a href="{{ route('admin.whatsapp.link', $notif) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;" title="Abrir WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                                        <a href="{{ \App\Services\WhatsappMessageService::waLink($reg->phone, \App\Services\WhatsappMessageService::messageForClient($reg, $reg->status === 'approved' ? 'approved' : 'rejected')) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;" title="Abrir WhatsApp"><i class="fab fa-whatsapp"></i></a>
                                         <form method="POST" action="{{ route('admin.whatsapp.sent', $notif) }}" style="display:inline;">@csrf @method('PATCH')
                                             <button type="submit" class="btn-action" style="background:#1cc88a;color:#fff;" title="Marcar enviado"><i class="fas fa-check"></i></button>
                                         </form>

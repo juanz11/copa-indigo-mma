@@ -21,11 +21,11 @@ class WhatsappMessageService
             $msg = "¡Hola {$name}! 🥊\n\n";
             $msg .= "Tu registro para la *Copa Índigo MMA* fue *APROBADO*.\n";
             $msg .= "Entrada: *{$type}*\n";
-            $msg .= "Cantidad: *{$qty}*\n";
+            $msg .= "Cantidad de sillas: *{$qty}*\n";
             $msg .= "Total pagado: *\${$total} USD*\n\n";
             $msg .= "Te esperamos el *Sábado 24 de Octubre a las 8:00 p.m.* en el *Hotel Hesperia Valencia*.\n";
             $msg .= "Presenta este mensaje en la entrada.\n\n";
-            $msg .= "Gracias por ser parte de esta noche histórica. 💙🕊️";
+            $msg .= "Gracias por ser parte de esta noche histórica.";
             return $msg;
         }
 
@@ -46,7 +46,8 @@ class WhatsappMessageService
         $msg .= "Nombre: *" . $registration->full_name . "*\n";
         $msg .= "Cédula: " . $registration->id_number . "\n";
         $msg .= "Teléfono: " . $registration->phone . "\n";
-        $msg .= "Entrada: " . ucfirst($registration->ticket_type) . " x" . $registration->quantity . "\n";
+        $msg .= "Entrada: " . ucfirst($registration->ticket_type) . "\n";
+        $msg .= "Sillas: " . $registration->quantity . "\n";
         $msg .= "Total: \$" . number_format($registration->total_amount, 2) . " USD\n";
         $msg .= "Método: " . ($registration->payment_method ? ucfirst($registration->payment_method) : 'N/A') . "\n";
         $msg .= "Ref: " . ($registration->payment_reference ?: 'N/A') . "\n\n";
@@ -60,7 +61,15 @@ class WhatsappMessageService
     public static function waLink(string $phone, string $message): string
     {
         $phone = preg_replace('/[^0-9]/', '', $phone);
-        return 'https://wa.me/' . $phone . '?text=' . urlencode($message);
+
+        // Convertir número local venezolano (0414...) a formato internacional (58414...)
+        if (substr($phone, 0, 1) === '0') {
+            $phone = '58' . ltrim($phone, '0');
+        } elseif (substr($phone, 0, 2) !== '58') {
+            $phone = '58' . $phone;
+        }
+
+        return 'https://wa.me/' . $phone . '?text=' . rawurlencode($message);
     }
 
     /**
