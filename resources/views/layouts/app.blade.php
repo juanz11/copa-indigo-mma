@@ -250,15 +250,15 @@
 </head>
 <body>
     <nav>
-        <a href="#inicio" class="nav-brand">
+        <a href="{{ request()->routeIs('home') ? '#inicio' : route('home') }}" class="nav-brand">
             <img src="/IMG_1257.PNG" alt="Copa Índigo MMA" class="nav-brand-img">
             <div class="nav-brand-text"><span>COPA </span>ÍNDIGO<span> MMA</span></div>
         </a>
         <div class="nav-links">
-            <a href="#evento">El Evento</a>
-            <a href="#galeria">Galería</a>
-            <a href="#entradas">Entradas</a>
-            <a href="#contacto">Contacto</a>
+            <a href="{{ request()->routeIs('home') ? '#evento' : route('home') . '#evento' }}">El Evento</a>
+            <a href="{{ request()->routeIs('home') ? '#galeria' : route('home') . '#galeria' }}">Galería</a>
+            <a href="{{ request()->routeIs('home') ? '#entradas' : route('home') . '#entradas' }}">Entradas</a>
+            <a href="{{ request()->routeIs('home') ? '#contacto' : route('home') . '#contacto' }}">Contacto</a>
             @auth
                 @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}"><i class="fas fa-shield-alt"></i> Admin</a>
@@ -274,7 +274,7 @@
                 <a href="{{ route('register') }}">Registrarse</a>
             @endauth
             <a href="https://www.youtube.com/@copaindigomma" target="_blank" class="nav-yt"><i class="fab fa-youtube"></i> YouTube</a>
-            <a href="#entradas" class="nav-cta">🎟️ Comprar</a>
+            <a href="{{ request()->routeIs('home') ? '#entradas' : route('home') . '#entradas' }}" class="nav-cta">🎟️ Comprar</a>
         </div>
     </nav>
 
@@ -303,9 +303,9 @@
         </div>
         <p>En honor a David Brandt 💙🕊️</p>
         <div class="footer-links">
-            <a href="#evento">El Evento</a>
-            <a href="#entradas">Entradas</a>
-            <a href="#contacto">Contacto</a>
+            <a href="{{ request()->routeIs('home') ? '#evento' : route('home') . '#evento' }}">El Evento</a>
+            <a href="{{ request()->routeIs('home') ? '#entradas' : route('home') . '#entradas' }}">Entradas</a>
+            <a href="{{ request()->routeIs('home') ? '#contacto' : route('home') . '#contacto' }}">Contacto</a>
         </div>
         <div class="social-icons">
             <a href="https://www.instagram.com/copaindigomma/" target="_blank" title="@copaindigomma"><i class="fab fa-instagram"></i></a>
