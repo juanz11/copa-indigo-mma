@@ -70,7 +70,7 @@
                     <tr>
                         <td style="color:#555;">{{ $reg->id }}</td>
                         <td style="color:#fff;font-weight:500;">{{ $reg->full_name }}</td>
-                        <td>{{ $reg->id_number }}</td>
+                        <td>{{ number_format((int) preg_replace('/[^0-9]/', '', $reg->id_number), 0, ',', '.') }}</td>
                         <td>{{ $reg->phone }}</td>
                         <td>
                             <span class="badge badge-{{ $reg->ticket_type }}">{{ ucfirst($reg->ticket_type) }}</span>
@@ -224,6 +224,10 @@
         document.getElementById('statusForm').reset();
     }
 
+    function formatCedula(value) {
+        return (value || '').toString().replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
     function openDetails(id) {
         const reg = allRegs.find(r => r.id === id);
         if (!reg) return;
@@ -233,7 +237,7 @@
             <div class="detail-row"><span class="detail-label">ID</span><span class="detail-value">${reg.id}</span></div>
             <div class="detail-row"><span class="detail-label">Estado</span><span class="detail-value" style="color:${color};font-weight:600;">${label}</span></div>
             <div class="detail-row"><span class="detail-label">Nombre Completo</span><span class="detail-value" style="color:#fff;font-weight:500;">${reg.full_name}</span></div>
-            <div class="detail-row"><span class="detail-label">Cédula</span><span class="detail-value">${reg.id_number}</span></div>
+            <div class="detail-row"><span class="detail-label">Cédula</span><span class="detail-value">${formatCedula(reg.id_number)}</span></div>
             <div class="detail-row"><span class="detail-label">Teléfono</span><span class="detail-value">${reg.phone}</span></div>
             <div class="detail-row"><span class="detail-label">Correo</span><span class="detail-value">${reg.email || '—'}</span></div>
             <div class="detail-row"><span class="detail-label">Red Social</span><span class="detail-value">${reg.social_media || '—'}</span></div>

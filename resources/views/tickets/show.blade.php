@@ -74,7 +74,7 @@
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Cédula</span>
-                <span class="ticket-value">{{ $registration->id_number }}</span>
+                <span class="ticket-value">{{ number_format((int) preg_replace('/[^0-9]/', '', $registration->id_number), 0, ',', '.') }}</span>
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Entrada</span>
