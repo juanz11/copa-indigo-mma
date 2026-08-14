@@ -82,7 +82,7 @@
 <body>
     <div class="login-box">
         <div class="login-logo">
-            <h1>COPA ÍNDIGO MMA</h1>
+            <h1>COPA <span style="color:#fff;">ÍNDIGO</span> MMA</h1>
             <p>Panel Administrativo</p>
         </div>
 
@@ -105,8 +105,9 @@
             <button type="submit" class="btn-login"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
         </form>
 
-        <div class="back-link">
+        <div class="back-link" style="flex-direction:column; gap:0.75rem;">
             <a href="{{ route('home') }}"><i class="fas fa-arrow-left"></i> Volver al sitio</a>
+            <p style="color:#888; font-size:0.85rem;">¿No tienes una cuenta? <a href="{{ route('register') }}" style="color:#D4AF37; text-decoration:none;">Regístrate aquí</a></p>
         </div>
     </div>
 </body>

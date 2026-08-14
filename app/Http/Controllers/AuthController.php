@@ -44,7 +44,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Registro exitoso. Ya puedes comprar tu entrada.');
+        return redirect()->intended(route('home'))->with('success', 'Registro exitoso. Ya puedes comprar tu entrada.');
     }
 
     public function login(Request $request)
@@ -61,7 +61,7 @@ class AuthController extends Controller
                 return redirect()->route('admin.dashboard');
             }
 
-            return redirect()->route('home');
+            return redirect()->intended(route('home'));
         }
 
         return back()->withErrors(['email' => 'Credenciales incorrectas.'])->onlyInput('email');

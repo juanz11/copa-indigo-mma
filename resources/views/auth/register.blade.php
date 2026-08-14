@@ -79,7 +79,7 @@
 <body>
     <div class="login-box">
         <div class="login-logo">
-            <h1>COPA ÍNDIGO MMA</h1>
+            <h1>COPA <span style="color:#fff;">ÍNDIGO</span> MMA</h1>
             <p>Crear cuenta para comprar entradas</p>
         </div>
 
