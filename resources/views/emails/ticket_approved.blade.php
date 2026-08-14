@@ -23,7 +23,7 @@
 <body style="color:#D4AF37;">
     <div class="wrapper">
         <div class="header">
-            <h1 style="color:#D4AF37;">COPA ÍNDIGO MMA</h1>
+            <h1 style="color:#D4AF37;">COPA <span style="color:#fff;">ÍNDIGO</span> MMA</h1>
         </div>
         <div class="body">
             <h2 style="color:#D4AF37;">¡Tu entrada fue aprobada!</h2>

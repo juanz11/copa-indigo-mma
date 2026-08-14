@@ -64,7 +64,7 @@
     @if($registration && $registration->status === 'approved')
     <div class="ticket">
         <div class="ticket-header">
-            <h1>COPA ÍNDIGO MMA</h1>
+            <h1>COPA <span style="color:#fff;">ÍNDIGO</span> MMA</h1>
             <span class="ticket-status status-approved"><i class="fas fa-check-circle"></i> Entrada válida</span>
         </div>
         <div class="ticket-body">
