@@ -609,7 +609,7 @@
         <div class="hero-meta-item"><i class="fas fa-map-marker-alt"></i> Hotel Hesperia Valencia</div>
     </div>
     <div class="hero-actions">
-        <a href="{{ route('mapa.index') }}" class="btn-primary" style="text-decoration:none;"><i class="fas fa-chair"></i> Reservar Mesa</a>
+        <a href="{{ route('mapa.index') }}" class="btn-primary" style="text-decoration:none;"><i class="fas fa-chair"></i> Compra tu Entrada </a>
         <a href="#evento" class="btn-outline"><i class="fas fa-info-circle"></i> Más Información</a>
     </div>
     <div class="hero-scroll"><i class="fas fa-chevron-down"></i> Descubre</div>
@@ -707,7 +707,7 @@
                 </div>
                 <ul class="ticket-perks">
                 </ul>
-                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
+                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Compra tu Entrada </button>
             </div>
 
             <!-- Mesa VIP -->
@@ -720,7 +720,7 @@
                     <p style="color:var(--text);font-size:0.85rem;margin:0;line-height:1.4;">Si deseas adquirir una mesa parcial, por ejemplo 4 sillas, solo obtienes el acceso al mesa y el consumo es aparte, es decir, no incluye el servicio de Mesa Completa.</p>
                 </div>
                
-                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Reservar Mesa</button>
+                <button class="ticket-btn" onclick="window.location.href='{{ route('mapa.index') }}'">Compra tu Entrada</button>
             </div>
         </div>
 
@@ -773,7 +773,7 @@
     <div class="modal-box">
         <div class="modal-header">
             <div>
-                <h2>🎟️ Reservar Mesa</h2>
+                <h2>🎟️Compra tu Entrada</h2>
                 <p class="selected-type" id="modalTicketLabel">Entrada General</p>
             </div>
             <button class="modal-close" onclick="closeModal()">&times;</button>
