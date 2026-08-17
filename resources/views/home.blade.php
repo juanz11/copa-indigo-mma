@@ -588,6 +588,39 @@
         .form-row { grid-template-columns: 1fr; }
         .hero-meta { gap: 1rem; }
         .nav-links a:not(.nav-cta):not(:last-child) { display: none; }
+        .section { padding: 3.5rem 1.25rem; }
+        .hero { padding: 5rem 1.25rem 3.5rem; }
+        .hero-badge { font-size: 0.7rem; padding: 0.3rem 0.9rem; }
+        .hero-desc { font-size: 0.95rem; padding: 0 0.25rem; }
+        .hero-meta { flex-direction: column; gap: 0.5rem; font-size: 0.85rem; }
+        .hero-actions { flex-direction: column; width: 100%; }
+        .hero-actions a { width: 100%; text-align: center; }
+        .sponsors-bar { padding: 1.25rem 1rem; }
+        .sponsors-list { gap: 1rem; }
+        .sponsors-list a { font-size: 0.85rem; word-break: break-word; }
+        .event-grid { grid-template-columns: 1fr; }
+        .tickets-grid { grid-template-columns: 1fr; }
+        .ticket-card { padding: 1.5rem 1.25rem; }
+        .ticket-price { font-size: 2rem; }
+        .ticket-type { font-size: 1.5rem; }
+        .contact-grid { flex-wrap: wrap; overflow-x: visible; }
+        .contact-card { flex: 1 1 100%; min-width: auto; }
+        .contact-card p, .contact-card a { white-space: normal; }
+        .gallery-section { padding: 3.5rem 1.25rem; }
+        .legacy-inner { padding: 3.5rem 1.25rem; }
+        .legacy-content blockquote { padding-left: 1rem; font-size: 1rem; }
+        .legacy-flyer { margin-bottom: 1.5rem; }
+        .modal-header { padding: 1.25rem 1.25rem 0.75rem; }
+        .modal-body { padding: 1.25rem; }
+        .modal-footer { padding: 1rem 1.25rem 1.25rem; }
+    }
+    @media (max-width: 480px) {
+        .hero h1 { font-size: 2.6rem; letter-spacing: 2px; }
+        .hero-subtitle { font-size: 1.1rem; letter-spacing: 3px; }
+        .section-title { font-size: 1.6rem; }
+        .sponsors-list a { font-size: 0.75rem; }
+        .ticket-price { font-size: 1.6rem; }
+        .ticket-type { font-size: 1.25rem; }
     }
 </style>
 @endsection
@@ -679,7 +712,7 @@
             </blockquote>
             <p class="legacy-name">DAVID BRANDT</p>
             <p class="legacy-sub">El Índigo · Siempre en nuestros corazones 🕊️</p>
-            <div style="margin-top:2rem; display:flex; gap:0.5rem; flex-wrap:nowrap; justify-content:center;">
+            <div style="margin-top:2rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
                 <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#CopaÍndigoMMA</span>
                 <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#DavidBrandt</span>
                 <span style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);color:var(--gold);padding:0.4rem 1rem;border-radius:999px;font-size:0.8rem;font-weight:600;">#FundaciónDavidBrandt</span>
