@@ -642,7 +642,7 @@
         <div class="hero-meta-item"><i class="fas fa-map-marker-alt"></i> Hotel Hesperia Valencia</div>
     </div>
     <div class="hero-actions">
-        <a href="{{ route('mapa.index') }}" class="btn-primary" style="text-decoration:none;"><i class="fas fa-chair"></i> Compra tu Entrada </a>
+        <a href="#entradas" class="btn-primary" style="text-decoration:none;"><i class="fas fa-chair"></i> Compra tu Entrada </a>
         <a href="#evento" class="btn-outline"><i class="fas fa-info-circle"></i> Más Información</a>
     </div>
     <div class="hero-scroll"><i class="fas fa-chevron-down"></i> Descubre</div>
