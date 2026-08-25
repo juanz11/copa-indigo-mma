@@ -171,6 +171,20 @@
         .mapa-grid { grid-template-columns: 1fr; }
         .mapa-sidebar { position: static; }
     }
+    .tipo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .tipo-box { border-radius: 10px; padding: 1rem; text-align: center; }
+    .tipo-vip { background: rgba(128,128,128,0.1); border: 1px solid rgba(255,255,255,0.15); }
+    .tipo-general { background: rgba(128,128,128,0.1); border: 1px solid rgba(255,255,255,0.15); }
+    .tipo-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    .tipo-vip .tipo-label { color: #fff; }
+    .tipo-general .tipo-label { color: #aaa; }
+    .tipo-mesas { font-size: clamp(0.85rem, 2.5vw, 1.05rem); color: #fff; font-weight: 700; margin: 0.25rem 0; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tipo-precio { font-size: clamp(0.75rem, 2.2vw, 0.85rem); color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    @media (max-width: 480px) {
+        .tipo-grid { grid-template-columns: 1fr; }
+        .tipo-box { padding: 0.75rem; }
+        .tipo-mesas { font-size: 0.95rem; }
+    }
 </style>
 @endsection
 
@@ -195,6 +209,19 @@
             <h2>Detalle de la Mesa</h2>
             <div id="panel-seleccion">
                 <p class="empty-state">Haz clic en una mesa del plano para empezar.</p>
+
+                <div class="tipo-grid">
+                    <div class="tipo-box tipo-vip">
+                        <div class="tipo-label">VIP</div>
+                        <div class="tipo-mesas">Mesas 1 — 14</div>
+                        <div class="tipo-precio">60 USD / silla</div>
+                    </div>
+                    <div class="tipo-box tipo-general">
+                        <div class="tipo-label">General</div>
+                        <div class="tipo-mesas">Mesas 15 — 25</div>
+                        <div class="tipo-precio">50 USD / silla</div>
+                    </div>
+                </div>
             </div>
         </aside>
 
@@ -224,6 +251,7 @@
     let mesaSeleccionadaId = null;
     let mesaSeleccionadaNumero = null;
     const panel = document.getElementById('panel-seleccion');
+    const defaultPanelHTML = panel.innerHTML;
     const alertEl = document.getElementById('mapa-alert');
 
     function showAlert(msg, type) {
@@ -256,7 +284,7 @@
             elemento.classList.remove('seleccionada');
             mesaSeleccionadaId = null;
             mesaSeleccionadaNumero = null;
-            panel.innerHTML = '<p class="empty-state">Haz clic en una mesa del plano para empezar.</p>';
+            panel.innerHTML = defaultPanelHTML;
             hideAlert();
         } else {
             elemento.classList.add('seleccionada');
