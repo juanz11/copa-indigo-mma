@@ -10,6 +10,7 @@ use App\Services\WhatsappMessageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -184,6 +185,19 @@ class MmaRegistrationController extends Controller
         ];
 
         return view('admin.mma.index', compact('registrations', 'stats'));
+    }
+
+    public function showPaymentProof($path)
+    {
+        if (strpos($path, '..') !== false || !$path || str_starts_with($path, '/')) {
+            abort(403);
+        }
+
+        if (!Storage::disk('public')->exists($path)) {
+            abort(404);
+        }
+
+        return response()->file(Storage::disk('public')->path($path));
     }
 
     public function updateStatus(Request $request, MmaRegistration $registration)

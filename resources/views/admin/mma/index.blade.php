@@ -246,7 +246,7 @@
             <div class="detail-row"><span class="detail-label">Total</span><span class="detail-value" style="color:var(--gold);font-weight:700;">${parseFloat(reg.total_amount).toFixed(2)} USD</span></div>
             <div class="detail-row"><span class="detail-label">Método de Pago</span><span class="detail-value" style="text-transform:capitalize;">${reg.payment_method || '—'}</span></div>
             <div class="detail-row"><span class="detail-label">Referencia</span><span class="detail-value">${reg.payment_reference || '—'}</span></div>
-            ${reg.payment_proof ? `<div class="detail-row"><span class="detail-label">Comprobante</span><span class="detail-value"><a href="/storage/${reg.payment_proof}" target="_blank" style="color:var(--gold);">Ver comprobante</a></span></div>` : ''}
+            ${reg.payment_proof ? `<div class="detail-row"><span class="detail-label">Comprobante</span><span class="detail-value"><a href="/admin/comprobante/${reg.payment_proof}" target="_blank" style="color:var(--gold);">Ver comprobante</a></span></div>` : ''}
             <div class="detail-row"><span class="detail-label">Fecha Registro</span><span class="detail-value">${new Date(reg.created_at).toLocaleString('es-ES')}</span></div>
             ${reg.admin_notes ? `<div class="detail-row"><span class="detail-label">Notas Admin</span><span class="detail-value" style="color:#ccc;">${reg.admin_notes}</span></div>` : ''}
         `;

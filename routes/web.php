@@ -53,4 +53,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/whatsapp/{notification}/link', [MmaRegistrationController::class, 'whatsappLink'])->name('whatsapp.link');
     Route::patch('/whatsapp/{notification}/sent', [MmaRegistrationController::class, 'markWhatsappSent'])->name('whatsapp.sent');
     Route::patch('/whatsapp/{notification}/failed', [MmaRegistrationController::class, 'markWhatsappFailed'])->name('whatsapp.failed');
+
+    Route::get('/comprobante/{path}', [MmaRegistrationController::class, 'showPaymentProof'])
+        ->where('path', '.*')
+        ->name('payment-proof');
 });
