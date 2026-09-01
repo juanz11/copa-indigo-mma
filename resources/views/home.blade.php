@@ -892,6 +892,15 @@
                         Transferencia Mercantil · Pago Móvil Mercantil
                     </div>
 
+                    <div class="form-total-box" style="margin-bottom:1.25rem;">
+                        <span class="label">Monto a Pagar</span>
+                        <span class="amount" id="total-display-step2">50.00 USD</span>
+                    </div>
+
+                    <p class="form-hint" style="text-align:center;color:var(--gold);font-size:0.85rem;margin-top:-0.75rem;margin-bottom:1.25rem;">
+                        Transferencia y/o Pago Móvil a la Tasa Referencial de Euro del BCV
+                    </p>
+
                     <div class="form-group">
                         <label>Método de Pago</label>
                         <select name="payment_method" id="payment_method">
@@ -1109,6 +1118,8 @@
         const total = (qty * price).toFixed(2);
         document.getElementById('total_amount').value = total;
         document.getElementById('total-display').textContent = total + ' USD';
+        const totalDisplayStep2 = document.getElementById('total-display-step2');
+        if (totalDisplayStep2) totalDisplayStep2.textContent = total + ' USD';
         updateMesaBenefits();
     }
 

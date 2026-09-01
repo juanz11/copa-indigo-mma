@@ -40,6 +40,18 @@
     .resumen-item strong { color: var(--gold); display: block; font-size: 1.1rem; }
     .resumen-item span { color: #e0e0e0; font-size: 0.9rem; }
     .registro-body { padding: 1.5rem; }
+    .form-total-box {
+        background: rgba(212,175,55,0.08);
+        border: 1px solid rgba(212,175,55,0.25);
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .form-total-box .label { font-size: 0.85rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+    .form-total-box .amount { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
     .form-row { display: flex; gap: 1rem; flex-wrap: wrap; }
     .form-group { flex: 1; min-width: 220px; margin-bottom: 1.25rem; }
     .form-group label { display: block; margin-bottom: 0.5rem; color: var(--gold); font-weight: 500; font-size: 0.9rem; }
@@ -180,6 +192,15 @@
                     <strong>💳 Métodos de Pago Disponibles:</strong>
                     Transferencia Mercantil · Pago Móvil Mercantil
                 </div>
+
+                <div class="form-total-box">
+                    <span class="label">Monto a Pagar</span>
+                    <span class="amount">{{ number_format($total, 2) }} USD</span>
+                </div>
+
+                <p class="form-hint" style="text-align:center;color:var(--gold);font-size:0.85rem;margin-top:-0.75rem;margin-bottom:1.25rem;">
+                    Transferencia y/o Pago Móvil a la Tasa Referencial de Euro del BCV
+                </p>
 
                 <div class="form-group">
                     <label>Método de Pago</label>
