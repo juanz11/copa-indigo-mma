@@ -13,7 +13,7 @@ class WhatsappMessageService
     public static function messageForClient(MmaRegistration $registration, string $status): string
     {
         $name = $registration->full_name;
-        $type = ucfirst($registration->ticket_type);
+        $type = ucwords(str_replace('_', ' ', $registration->ticket_type));
         $qty  = $registration->quantity;
         $total = number_format($registration->total_amount, 2);
 
@@ -21,6 +21,9 @@ class WhatsappMessageService
             $msg = "¡Hola {$name}! 🥊\n\n";
             $msg .= "Tu registro para la *Copa Índigo MMA* fue *APROBADO*.\n";
             $msg .= "Entrada: *{$type}*\n";
+            if ($registration->mesa) {
+                $msg .= "Mesa: *#{$registration->mesa->numero}*\n";
+            }
             $msg .= "Cantidad de sillas: *{$qty}*\n";
             $msg .= "Total pagado: *\${$total} USD*\n\n";
             $msg .= "Te esperamos el *Sábado 24 de Octubre a las 8:00 p.m.* en el *Hotel Hesperia Valencia*.\n";
@@ -46,7 +49,10 @@ class WhatsappMessageService
         $msg .= "Nombre: *" . $registration->full_name . "*\n";
         $msg .= "Cédula: " . $registration->id_number . "\n";
         $msg .= "Teléfono: " . $registration->phone . "\n";
-        $msg .= "Entrada: " . ucfirst($registration->ticket_type) . "\n";
+        $msg .= "Entrada: " . ucwords(str_replace('_', ' ', $registration->ticket_type)) . "\n";
+        if ($registration->mesa) {
+            $msg .= "Mesa: #" . $registration->mesa->numero . "\n";
+        }
         $msg .= "Sillas: " . $registration->quantity . "\n";
         $msg .= "Total: \$" . number_format($registration->total_amount, 2) . " USD\n";
         $msg .= "Método: " . ($registration->payment_method ? ucfirst($registration->payment_method) : 'N/A') . "\n";

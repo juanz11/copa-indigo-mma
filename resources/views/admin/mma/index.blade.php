@@ -73,7 +73,20 @@
                         <td>{{ number_format((int) preg_replace('/[^0-9]/', '', $reg->id_number), 0, ',', '.') }}</td>
                         <td>{{ $reg->phone }}</td>
                         <td>
-                            <span class="badge badge-{{ $reg->ticket_type }}">{{ ucfirst($reg->ticket_type) }}</span>
+                            @php
+                                $typeMap = [
+                                    'mesa_general' => 'Mesa General',
+                                    'mesa_vip'     => 'Mesa VIP',
+                                    'mesa'         => 'Mesa',
+                                    'general'      => 'General',
+                                    'vip'          => 'VIP',
+                                    'ringside'     => 'Ringside',
+                                ];
+                            @endphp
+                            <span class="badge badge-{{ $reg->ticket_type }}">{{ $typeMap[$reg->ticket_type] ?? ucfirst($reg->ticket_type) }}</span>
+                            @if($reg->mesa)
+                                <div style="font-size:0.72rem;color:#999;margin-top:0.25rem;">Mesa #{{ $reg->mesa->numero }}</div>
+                            @endif
                         </td>
                         <td style="text-align:center;">{{ $reg->quantity }}</td>
                         <td style="color:var(--gold);font-weight:600;">${{ number_format($reg->total_amount, 2) }}</td>
@@ -209,7 +222,7 @@
 @section('scripts')
 <script>
     const allRegs = @json($registrations->items());
-    const ticketLabels = { general: 'General', vip: 'VIP', ringside: 'Ringside' };
+    const ticketLabels = { general: 'General', vip: 'VIP', ringside: 'Ringside', mesa: 'Mesa', mesa_general: 'Mesa General', mesa_vip: 'Mesa VIP' };
     const statusLabels = { pending: 'Pendiente', approved: 'Aprobado', rejected: 'Rechazado' };
     const statusColors = { pending: '#f6c23e', approved: '#1cc88a', rejected: '#e74a3b' };
 

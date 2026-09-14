@@ -132,18 +132,12 @@
         </div>
 
         <div class="resumen-box">
-            <div class="resumen-item">
-                <strong>Mesa</strong>
-                <span>#{{ $numero }}</span>
-            </div>
-            <div class="resumen-item">
-                <strong>Tipo</strong>
-                <span>{{ $tipo === 'mesa_vip' ? 'Mesa VIP' : 'Mesa General' }}</span>
-            </div>
-            <div class="resumen-item">
-                <strong>Sillas</strong>
-                <span>{{ $cantidad }}</span>
-            </div>
+            @foreach($items as $item)
+                <div class="resumen-item">
+                    <strong>Mesa #{{ $item['numero'] }}</strong>
+                    <span>{{ $item['tipo'] === 'mesa_vip' ? 'VIP' : 'General' }} · {{ $item['cantidad'] }} silla(s) · ${{ number_format($item['subtotal'], 2) }}</span>
+                </div>
+            @endforeach
             <div class="resumen-item">
                 <strong>Total</strong>
                 <span>{{ number_format($total, 2) }} USD</span>
@@ -156,10 +150,10 @@
 
             <form id="registroForm" enctype="multipart/form-data">
                 @csrf
-                <input type="hidden" name="ticket_type" value="{{ $tipo }}">
-                <input type="hidden" name="quantity" value="{{ $cantidad }}">
-                <input type="hidden" name="total_amount" value="{{ $total }}">
-                <input type="hidden" name="mesa_id" value="{{ $mesa->id }}">
+                @foreach($items as $i => $item)
+                    <input type="hidden" name="mesas[{{ $i }}][id]" value="{{ $item['mesa']->id }}">
+                    <input type="hidden" name="mesas[{{ $i }}][cantidad]" value="{{ $item['cantidad'] }}">
+                @endforeach
 
                 <div class="form-row">
                     <div class="form-group">
@@ -241,7 +235,7 @@
             <h2>¡Registro Exitoso!</h2>
             <p>Tu reserva fue recibida. Te contactaremos para confirmar el pago.</p>
             <ul class="checklist">
-                <li><i class="fas fa-check"></i> Mesa reservada</li>
+                <li><i class="fas fa-check"></i> Mesa(s) reservada(s)</li>
                 <li><i class="fas fa-check"></i> Pago registrado</li>
                 <li><i class="fas fa-check"></i> Confirmación vía WhatsApp/Email</li>
                 <li><i class="fas fa-check"></i> Ticket digital al aprobar</li>

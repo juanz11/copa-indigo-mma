@@ -32,7 +32,10 @@
 
             <div class="details">
                 <p style="color:#D4AF37;"><strong>Entrada:</strong> {{ ucwords(str_replace('_', ' ', $registration->ticket_type)) }}</p>
-                <p style="color:#D4AF37;"><strong>Cantidad:</strong> {{ $registration->quantity }}</p>
+                @if($registration->mesa)
+                    <p style="color:#D4AF37;"><strong>Mesa:</strong> #{{ $registration->mesa->numero }}</p>
+                @endif
+                <p style="color:#D4AF37;"><strong>Cantidad de sillas:</strong> {{ $registration->quantity }}</p>
                 <p style="color:#D4AF37;"><strong>Total pagado:</strong> {{ number_format($registration->total_amount, 2) }} USD</p>
                 <p style="color:#D4AF37;"><strong>Evento:</strong> Sábado 24 de Octubre, 8:00 p.m.</p>
                 <p style="color:#D4AF37;"><strong>Lugar:</strong> Hotel Hesperia Valencia</p>

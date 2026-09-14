@@ -8,6 +8,7 @@ use App\Models\MmaRegistration;
 use App\Models\WhatsappNotification;
 use App\Services\WhatsappMessageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -25,25 +26,39 @@ class MmaRegistrationController extends Controller
                 'phone'             => 'required|string|max:20',
                 'email'             => 'nullable|email|max:255',
                 'social_media'      => 'nullable|string|max:255',
-                'ticket_type'       => 'required|in:general,vip,ringside,mesa,mesa_general,mesa_vip',
-                'quantity'          => 'required|integer|min:1',
-                'total_amount'      => 'required|numeric|min:1',
+                'ticket_type'       => 'required_without:mesas|in:general,vip,ringside,mesa,mesa_general,mesa_vip',
+                'quantity'          => 'required_without:mesas|integer|min:1',
+                'total_amount'      => 'required_without:mesas|numeric|min:1',
                 'payment_method'    => 'nullable|string|max:100',
                 'payment_reference' => 'nullable|string|max:255',
                 'payment_proof'     => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
                 'mesa_id'           => 'nullable|exists:mesas,id',
+                'mesas'             => 'nullable|array|min:1',
+                'mesas.*.id'        => 'required|integer|exists:mesas,id',
+                'mesas.*.cantidad'  => 'required|integer|min:1',
             ], [
                 'full_name.required'    => 'El nombre completo es obligatorio.',
                 'id_number.required'    => 'La cédula es obligatoria.',
                 'phone.required'        => 'El teléfono es obligatorio.',
-                'ticket_type.required'  => 'Debes seleccionar un tipo de entrada.',
-                'ticket_type.in'        => 'El tipo de entrada no es válido.',
-                'quantity.required'     => 'La cantidad es obligatoria.',
-                'quantity.min'          => 'Debe adquirir al menos 1 entrada.',
-                'total_amount.required' => 'El monto total es obligatorio.',
+                'ticket_type.required'          => 'Debes seleccionar un tipo de entrada.',
+                'ticket_type.required_without'  => 'Debes seleccionar un tipo de entrada.',
+                'ticket_type.in'                => 'El tipo de entrada no es válido.',
+                'quantity.required'             => 'La cantidad es obligatoria.',
+                'quantity.required_without'     => 'La cantidad es obligatoria.',
+                'quantity.min'                  => 'Debe adquirir al menos 1 entrada.',
+                'total_amount.required'         => 'El monto total es obligatorio.',
+                'total_amount.required_without' => 'El monto total es obligatorio.',
+                'mesas.required'                => 'Debes seleccionar al menos una mesa.',
+                'mesas.*.id.exists'             => 'Una de las mesas seleccionadas no es válida.',
+                'mesas.*.cantidad.min'          => 'Debe adquirir al menos 1 silla por mesa.',
                 'payment_proof.mimes'   => 'El comprobante debe ser JPG, PNG o PDF.',
                 'payment_proof.max'     => 'El comprobante no debe superar los 5MB.',
             ]);
+
+            // Compra de una o más mesas desde el mapa
+            if (!empty($validated['mesas'])) {
+                return $this->storeMesas($request, $validated);
+            }
 
             if (!empty($validated['mesa_id'])) {
                 $mesa = Mesa::withSum('registrations', 'quantity')->findOrFail($validated['mesa_id']);
@@ -138,35 +153,198 @@ class MmaRegistrationController extends Controller
         }
     }
 
-    public function registro(Request $request)
+    /**
+     * Registra la compra de una o más mesas: crea un registro por mesa
+     * para que cada una conserve su QR, aprobación y conteo de sillas.
+     */
+    private function storeMesas(Request $request, array $validated)
     {
-        $validated = $request->validate([
-            'mesa_id'  => 'required|exists:mesas,id',
-            'numero'   => 'nullable|string|max:50',
-            'tipo'     => 'nullable|in:mesa_general,mesa_vip',
-            'cantidad' => 'nullable|integer|min:1',
+        // Agrupar cantidades por mesa por si llega duplicada
+        $pedidos = [];
+        foreach ($validated['mesas'] as $item) {
+            $id = (int) $item['id'];
+            $pedidos[$id] = ($pedidos[$id] ?? 0) + (int) $item['cantidad'];
+        }
+
+        $registrations = DB::transaction(function () use ($pedidos, $validated, $request) {
+            $mesas = Mesa::withSum('registrations', 'quantity')
+                ->whereIn('id', array_keys($pedidos))
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
+
+            // Validar disponibilidad de todas las mesas antes de crear nada
+            $items = [];
+            $errores = [];
+            foreach ($pedidos as $mesaId => $cantidad) {
+                $mesa = $mesas->get($mesaId);
+                $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
+                $restantes = $mesa->capacidad - $vendidas;
+
+                if ($cantidad > $restantes) {
+                    $errores[] = 'Solo quedan ' . max(0, $restantes) . ' sillas disponibles en la mesa #' . $mesa->numero . '.';
+                    continue;
+                }
+
+                // Las mesas del 1 al 14 son VIP, del 15 al 25 son General
+                $tipo = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
+                $precio = $tipo === 'mesa_vip' ? 60 : 50;
+
+                $items[] = [
+                    'mesa'     => $mesa,
+                    'cantidad' => $cantidad,
+                    'tipo'     => $tipo,
+                    'vendidas' => $vendidas,
+                    'subtotal' => $cantidad * $precio,
+                ];
+            }
+
+            if ($errores) {
+                throw ValidationException::withMessages(['mesas' => $errores]);
+            }
+
+            $paymentProofPath = null;
+            if ($request->hasFile('payment_proof')) {
+                $file = $request->file('payment_proof');
+                $filename = time() . '_' . $validated['id_number'] . '.' . $file->getClientOriginalExtension();
+                $paymentProofPath = $file->storeAs('mma_proofs', $filename, 'public');
+            }
+
+            $created = [];
+            foreach ($items as $item) {
+                $mesa = $item['mesa'];
+
+                $created[] = MmaRegistration::create([
+                    'user_id'           => auth()->id(),
+                    'full_name'         => $validated['full_name'],
+                    'id_number'         => $validated['id_number'],
+                    'phone'             => $validated['phone'],
+                    'email'             => $validated['email'] ?? null,
+                    'social_media'      => $validated['social_media'] ?? null,
+                    'ticket_type'       => $item['tipo'],
+                    'quantity'          => $item['cantidad'],
+                    'total_amount'      => $item['subtotal'],
+                    'payment_method'    => $validated['payment_method'] ?? null,
+                    'payment_reference' => $validated['payment_reference'] ?? null,
+                    'payment_proof'     => $paymentProofPath,
+                    'mesa_id'           => $mesa->id,
+                    'status'            => 'pending',
+                ]);
+
+                $mesa->update([
+                    'estado' => ($item['vendidas'] + $item['cantidad'] >= $mesa->capacidad) ? 'ocupada' : 'reservada',
+                ]);
+            }
+
+            return $created;
+        });
+
+        $totalGeneral = collect($registrations)->sum('total_amount');
+        $numeros = collect($registrations)->map(fn ($r) => '#' . $r->mesa->numero)->implode(', ');
+
+        // Log del pago
+        Log::channel('daily')->info('Nuevo registro de pago — Copa Índigo MMA', [
+            'user_id'      => auth()->id(),
+            'email'        => auth()->user()?->email,
+            'registro_ids' => collect($registrations)->pluck('id')->all(),
+            'nombre'       => $validated['full_name'],
+            'cedula'       => $validated['id_number'],
+            'telefono'     => $validated['phone'],
+            'mesas'        => $numeros,
+            'total'        => $totalGeneral,
+            'metodo'       => $validated['payment_method'] ?? null,
+            'referencia'   => $validated['payment_reference'] ?? null,
         ]);
 
-        $mesa = Mesa::withSum('registrations', 'quantity')->findOrFail($validated['mesa_id']);
-        $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
-        $disponibles = max(0, $mesa->capacidad - $vendidas);
+        // Guardar notificación para el admin (no se envía automáticamente, queda pendiente)
+        if (config('mma.whatsapp.notify_admin_on_register')) {
+            foreach ($registrations as $registration) {
+                WhatsappMessageService::logNotification(
+                    $registration,
+                    WhatsappMessageService::messageForAdmin($registration),
+                    'admin'
+                );
+            }
+        }
 
-        // Las mesas del 1 al 14 son VIP, del 15 al 25 son General
-        $tipo = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
+        $message = '¡Registro exitoso! Reservaste ' . count($registrations) . ' mesa(s) (' . $numeros . '). Tu inscripción está pendiente de validación. Te contactaremos pronto.';
 
-        $cantidad = min(max((int) ($validated['cantidad'] ?? 1), 1), $disponibles);
-        $precio = $tipo === 'mesa_vip' ? 60 : 50;
-        $total = $cantidad * $precio;
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => $message]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    public function registro(Request $request)
+    {
+        // Compatibilidad con el formato anterior: ?mesa_id=X&cantidad=N
+        if ($request->filled('mesa_id') && !$request->filled('mesas')) {
+            $request->merge([
+                'mesas' => [[
+                    'id'       => $request->input('mesa_id'),
+                    'cantidad' => $request->input('cantidad', 1),
+                ]],
+            ]);
+        }
+
+        $validated = $request->validate([
+            'mesas'            => 'required|array|min:1',
+            'mesas.*.id'       => 'required|integer|exists:mesas,id',
+            'mesas.*.cantidad' => 'nullable|integer|min:1',
+        ]);
+
+        // Agrupar cantidades por mesa por si llega duplicada
+        $pedidos = [];
+        foreach ($validated['mesas'] as $item) {
+            $id = (int) $item['id'];
+            $pedidos[$id] = ($pedidos[$id] ?? 0) + max((int) ($item['cantidad'] ?? 1), 1);
+        }
+
+        $mesas = Mesa::withSum('registrations', 'quantity')
+            ->whereIn('id', array_keys($pedidos))
+            ->get()
+            ->keyBy('id');
+
+        $items = [];
+        $total = 0;
+
+        foreach ($pedidos as $mesaId => $cantidadPedida) {
+            $mesa = $mesas->get($mesaId);
+            $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
+            $disponibles = max(0, $mesa->capacidad - $vendidas);
+
+            if ($disponibles <= 0) {
+                continue;
+            }
+
+            // Las mesas del 1 al 14 son VIP, del 15 al 25 son General
+            $tipo = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
+            $precio = $tipo === 'mesa_vip' ? 60 : 50;
+            $cantidad = min($cantidadPedida, $disponibles);
+            $subtotal = $cantidad * $precio;
+            $total += $subtotal;
+
+            $items[] = [
+                'mesa'        => $mesa,
+                'numero'      => $mesa->numero,
+                'tipo'        => $tipo,
+                'cantidad'    => $cantidad,
+                'precio'      => $precio,
+                'subtotal'    => $subtotal,
+                'disponibles' => $disponibles,
+                'vendidas'    => $vendidas,
+            ];
+        }
+
+        if (empty($items)) {
+            return redirect()->route('mapa.index')
+                ->with('error', 'Las mesas seleccionadas ya no tienen sillas disponibles.');
+        }
 
         return view('registro', [
-            'mesa'        => $mesa,
-            'numero'      => $validated['numero'] ?? $mesa->numero,
-            'tipo'        => $tipo,
-            'cantidad'    => $cantidad,
-            'precio'      => $precio,
-            'total'       => $total,
-            'disponibles' => $disponibles,
-            'vendidas'    => $vendidas,
+            'items' => $items,
+            'total' => $total,
         ]);
     }
 

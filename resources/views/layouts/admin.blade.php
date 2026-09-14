@@ -174,6 +174,8 @@
         .badge-general { background: rgba(255,255,255,0.08); color: #ccc; }
         .badge-vip { background: rgba(212,175,55,0.15); color: var(--gold); }
         .badge-ringside { background: rgba(0,102,255,0.15); color: #38BFFF; }
+        .badge-mesa, .badge-mesa_general { background: rgba(255,255,255,0.08); color: #ccc; }
+        .badge-mesa_vip { background: rgba(212,175,55,0.15); color: var(--gold); }
 
         /* ACTION BTNS */
         .action-btns { display: flex; gap: 0.4rem; }

@@ -180,6 +180,12 @@
     .tipo-general .tipo-label { color: #aaa; }
     .tipo-mesas { font-size: clamp(0.85rem, 2.5vw, 1.05rem); color: #fff; font-weight: 700; margin: 0.25rem 0; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .tipo-precio { font-size: clamp(0.75rem, 2.2vw, 0.85rem); color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mesa-item { background: #0e0e0e; border: 1px solid rgba(212,175,55,0.15); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; }
+    .mesa-item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; color: #e0e0e0; font-size: 0.95rem; }
+    .mesa-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: #aaa; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: 0.1rem 0.4rem; margin-left: 0.35rem; }
+    .mesa-tag.vip { color: var(--gold); border-color: rgba(212,175,55,0.4); }
+    .mesa-remove { background: transparent; border: none; color: #e74a3b; font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 0.25rem; }
+    .mesa-subtotal { margin-left: auto; color: var(--gold); font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
     @media (max-width: 480px) {
         .tipo-grid { grid-template-columns: 1fr; }
         .tipo-box { padding: 0.75rem; }
@@ -191,8 +197,8 @@
 @section('content')
 <section class="mapa-section">
     <div class="mapa-header">
-        <h1>Reserva tu Mesa</h1>
-        <p>Selecciona una mesa disponible en el plano. El mapa siempre está a la derecha.</p>
+        <h1>Reserva tus Mesas</h1>
+        <p>Selecciona una o más mesas disponibles en el plano. El mapa siempre está a la derecha.</p>
     </div>
 
     <div class="mapa-legend">
@@ -206,9 +212,9 @@
 
     <div class="mapa-grid">
         <aside class="mapa-sidebar">
-            <h2>Detalle de la Mesa</h2>
+            <h2>Tu Selección</h2>
             <div id="panel-seleccion">
-                <p class="empty-state">Haz clic en una mesa del plano para empezar.</p>
+                <p class="empty-state">Haz clic en una o más mesas del plano para empezar.</p>
 
                 <div class="tipo-grid">
                     <div class="tipo-box tipo-vip">
@@ -248,8 +254,7 @@
 
 @section('scripts')
 <script>
-    let mesaSeleccionadaId = null;
-    let mesaSeleccionadaNumero = null;
+    const seleccionadas = new Map();
     const panel = document.getElementById('panel-seleccion');
     const defaultPanelHTML = panel.innerHTML;
     const alertEl = document.getElementById('mapa-alert');
@@ -270,136 +275,135 @@
         const vendidas = parseInt(elemento.getAttribute('data-vendidas')) || 0;
         const capacidad = parseInt(elemento.getAttribute('data-capacidad')) || 8;
         const estado = elemento.getAttribute('data-estado');
+        const disponibles = Math.max(0, capacidad - vendidas);
 
-        if (estado === 'ocupada' || vendidas >= capacidad) {
+        if (estado === 'ocupada' || disponibles <= 0) {
             showAlert('La mesa #' + numero + ' está Completa.', 'error');
             return;
         }
 
-        document.querySelectorAll('.mesa-hotspot.seleccionada').forEach(el => {
-            if (el !== elemento) el.classList.remove('seleccionada');
+        if (seleccionadas.has(mesaId)) {
+            seleccionadas.delete(mesaId);
+            elemento.classList.remove('seleccionada');
+        } else {
+            seleccionadas.set(mesaId, {
+                id: mesaId,
+                numero: numero,
+                capacidad: capacidad,
+                vendidas: vendidas,
+                disponibles: disponibles,
+                cantidad: disponibles,
+                esVip: parseInt(numero) <= 14,
+            });
+            elemento.classList.add('seleccionada');
+        }
+
+        hideAlert();
+        renderPanel();
+    }
+
+    function quitarMesa(mesaId) {
+        seleccionadas.delete(mesaId);
+        const el = document.querySelector('.mesa-hotspot[data-id="' + mesaId + '"]');
+        if (el) el.classList.remove('seleccionada');
+        renderPanel();
+    }
+
+    function cambiarCantidad(mesaId, delta) {
+        const item = seleccionadas.get(mesaId);
+        if (!item) return;
+        item.cantidad = Math.min(Math.max(item.cantidad + delta, 1), item.disponibles);
+        renderPanel();
+    }
+
+    function setCantidad(mesaId, value) {
+        const item = seleccionadas.get(mesaId);
+        if (!item) return;
+        const v = parseInt(value) || 1;
+        item.cantidad = Math.min(Math.max(v, 1), item.disponibles);
+        renderPanel();
+    }
+
+    function renderPanel() {
+        if (seleccionadas.size === 0) {
+            panel.innerHTML = defaultPanelHTML;
+            return;
+        }
+
+        let html = '';
+        let total = 0;
+        let totalSillas = 0;
+        let hayCompletaVip = false;
+        let hayCompletaGeneral = false;
+
+        seleccionadas.forEach(item => {
+            const precio = item.esVip ? 60 : 50;
+            const subtotal = item.cantidad * precio;
+            total += subtotal;
+            totalSillas += item.cantidad;
+
+            const esCompleta = item.vendidas === 0 && item.cantidad === item.capacidad;
+            if (esCompleta && item.esVip) hayCompletaVip = true;
+            if (esCompleta && !item.esVip) hayCompletaGeneral = true;
+
+            html += `
+                <div class="mesa-item">
+                    <div class="mesa-item-head">
+                        <span>Mesa <strong style="color:var(--gold);">#${item.numero}</strong><span class="mesa-tag ${item.esVip ? 'vip' : ''}">${item.esVip ? 'VIP' : 'General'}</span></span>
+                        <button type="button" class="mesa-remove" onclick="quitarMesa('${item.id}')" title="Quitar mesa">&times;</button>
+                    </div>
+                    <p class="info-sillas" style="margin-bottom:0.4rem;">$${precio}/silla &middot; Disponibles: <strong>${item.disponibles}</strong>${item.vendidas > 0 ? ` &middot; Vendidas: ${item.vendidas}/${item.capacidad}` : ''}</p>
+                    <div class="cantidad-control" style="margin-bottom:0;">
+                        <button type="button" onclick="cambiarCantidad('${item.id}', -1)">−</button>
+                        <input type="number" value="${item.cantidad}" min="1" max="${item.disponibles}" onchange="setCantidad('${item.id}', this.value)">
+                        <button type="button" onclick="cambiarCantidad('${item.id}', 1)">+</button>
+                        <span class="mesa-subtotal">$${subtotal.toFixed(2)}</span>
+                    </div>
+                </div>`;
         });
 
-        if (elemento.classList.contains('seleccionada')) {
-            elemento.classList.remove('seleccionada');
-            mesaSeleccionadaId = null;
-            mesaSeleccionadaNumero = null;
-            panel.innerHTML = defaultPanelHTML;
-            hideAlert();
-        } else {
-            elemento.classList.add('seleccionada');
-            mesaSeleccionadaId = mesaId;
-            mesaSeleccionadaNumero = numero;
-            mostrarPanel(elemento);
-            hideAlert();
+        if (hayCompletaVip || hayCompletaGeneral) {
+            let promos = '';
+            if (hayCompletaVip) promos += '<li>VIP: 1 Servicio Whisky + 2 Raciones de Tequeños</li>';
+            if (hayCompletaGeneral) promos += '<li>General: 1 Servicio de Ron y/o Vodka + 1 Ración de Tequeños</li>';
+            html += `
+                <div class="promo-leyenda" style="margin-top:0.25rem;margin-bottom:0.75rem;padding:0.5rem;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;font-size:0.85rem;color:#e0e0e0;">
+                    <strong style="color:var(--gold);display:block;margin-bottom:0.25rem;">Promoción por Mesa Completa:</strong>
+                    <ul style="margin:0;padding-left:1rem;list-style:disc;">${promos}</ul>
+                </div>`;
         }
-    }
 
-    function mostrarPanel(elemento) {
-        const vendidas = parseInt(elemento.getAttribute('data-vendidas')) || 0;
-        const capacidad = parseInt(elemento.getAttribute('data-capacidad')) || 8;
-        const disponibles = capacidad - vendidas;
-        const puedeCompleta = vendidas === 0;
-        const numero = elemento.getAttribute('data-numero');
-        const esVip = parseInt(numero) <= 14;
-        const precio = esVip ? 60 : 50;
-
-        panel.innerHTML = `
-            <div style="margin-bottom:0.75rem;">
-                <span style="color:#aaa;font-size:0.9rem;">Mesa</span>
-                <div style="color:var(--gold);font-size:1.5rem;font-weight:700;">#${numero}</div>
-            </div>
-            <p class="info-sillas">Sillas vendidas: <strong>${vendidas}/${capacidad}</strong>. Disponibles: <strong>${disponibles}</strong></p>
-
-            <p class="info-sillas">Tipo: <strong>${esVip ? 'VIP' : 'General'}</strong> — $${precio}/silla</p>
-
-            <label style="display:block;color:var(--gold);margin-bottom:0.5rem;font-size:0.9rem;font-weight:500;">Cantidad de Sillas</label>
-            <div class="cantidad-control">
-                <button type="button" onclick="cambiarCantidad(-1)">−</button>
-                <input type="number" id="cantidad" value="1" min="1" max="${disponibles}" onchange="validarCantidad()">
-                <button type="button" onclick="cambiarCantidad(1)">+</button>
-            </div>
-
-            <button type="button" class="btn-mesa btn-full" id="btn-completa" onclick="comprarCompleta(${disponibles})" ${puedeCompleta ? '' : 'disabled'}>Comprar Mesa Completa (${disponibles} Sillas)</button>
-            <p id="msg-completa" class="info-sillas" style="display:${puedeCompleta ? 'none' : 'block'};">No puedes comprar la Mesa Completa porque ya se vendieron Sillas.</p>
-
-            <div class="promo-leyenda" style="margin-top:0.75rem;padding:0.5rem;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;font-size:0.85rem;color:#e0e0e0;">
-                <strong style="color:var(--gold);display:block;margin-bottom:0.25rem;">Promoción al comprar Mesa Completa:</strong>
-                <ul style="margin:0;padding-left:1rem;list-style:disc;">
-                    ${esVip
-                        ? '<li>1 Servicio Whisky + 2 Raciones de Tequeños</li>'
-                        : '<li>1 Servicio de Ron y/o Vodka + 1 Ración de Tequeños</li>'}
-                </ul>
-            </div>
-
+        html += `
             <div class="total-box">
-                <span>Total a pagar</span>
-                <span class="amount" id="total-display">${(1 * precio).toFixed(2)} USD</span>
+                <span>${seleccionadas.size} mesa(s) &middot; ${totalSillas} silla(s)</span>
+                <span class="amount" id="total-display">${total.toFixed(2)} USD</span>
             </div>
-
             <a href="#" class="btn-mesa btn-continuar" id="btn-continuar" onclick="return continuarRegistro()">Continuar Registro</a>
         `;
-    }
 
-    function cambiarCantidad(delta) {
-        const input = document.getElementById('cantidad');
-        if (!input) return;
-        let value = parseInt(input.value) || 1;
-        const min = parseInt(input.min) || 1;
-        const max = parseInt(input.max) || 8;
-        value = Math.min(Math.max(value + delta, min), max);
-        input.value = value;
-        calcularTotal();
-    }
-
-    function validarCantidad() {
-        const input = document.getElementById('cantidad');
-        if (!input) return;
-        const min = parseInt(input.min) || 1;
-        const max = parseInt(input.max) || 8;
-        let value = parseInt(input.value) || 1;
-        value = Math.min(Math.max(value, min), max);
-        input.value = value;
-        calcularTotal();
-    }
-
-    function comprarCompleta(disponibles) {
-        const input = document.getElementById('cantidad');
-        if (input) input.value = disponibles;
-        calcularTotal();
-    }
-
-    function calcularTotal() {
-        const input = document.getElementById('cantidad');
-        if (!input) return;
-        const qty = parseInt(input.value) || 1;
-        const esVip = parseInt(mesaSeleccionadaNumero) <= 14;
-        const precio = esVip ? 60 : 50;
-        const total = (qty * precio).toFixed(2);
-        document.getElementById('total-display').textContent = total + ' USD';
+        panel.innerHTML = html;
     }
 
     function continuarRegistro() {
-        if (!mesaSeleccionadaId) {
-            showAlert('Selecciona una mesa disponible.', 'error');
+        if (seleccionadas.size === 0) {
+            showAlert('Selecciona al menos una mesa disponible.', 'error');
             return false;
         }
 
-        const input = document.getElementById('cantidad');
-        if (!input) {
-            showAlert('Indica la cantidad de Sillas.', 'error');
-            return false;
-        }
+        const params = [];
+        let i = 0;
+        seleccionadas.forEach(item => {
+            params.push(encodeURIComponent(`mesas[${i}][id]`) + '=' + encodeURIComponent(item.id));
+            params.push(encodeURIComponent(`mesas[${i}][cantidad]`) + '=' + encodeURIComponent(item.cantidad));
+            i++;
+        });
 
-        const cantidad = input.value;
-
-        const base = '{{ route("mma.registro") }}';
-        const url = base + '?mesa_id=' + encodeURIComponent(mesaSeleccionadaId) +
-                    '&numero=' + encodeURIComponent(mesaSeleccionadaNumero) +
-                    '&cantidad=' + encodeURIComponent(cantidad);
-
-        window.location.href = url;
+        window.location.href = '{{ route("mma.registro") }}?' + params.join('&');
         return false;
     }
+
+    @if(session('error'))
+        showAlert(@json(session('error')), 'error');
+    @endif
 </script>
 @endsection
