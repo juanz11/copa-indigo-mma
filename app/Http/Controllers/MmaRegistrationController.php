@@ -172,7 +172,7 @@ class MmaRegistrationController extends Controller
 
     public function adminIndex()
     {
-        $registrations = MmaRegistration::with(['approver', 'whatsappNotifications'])
+        $registrations = MmaRegistration::with(['approver', 'whatsappNotifications', 'mesa'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 

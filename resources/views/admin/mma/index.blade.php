@@ -234,7 +234,7 @@
         const color = statusColors[reg.status] || '#888';
         const label = statusLabels[reg.status] || reg.status;
         document.getElementById('detailsContent').innerHTML = `
-            <div class="detail-row"><span class="detail-label">ID</span><span class="detail-value">${reg.id}</span></div>
+            <div class="detail-row"><span class="detail-label">Mesa</span><span class="detail-value" style="color:#fff;font-weight:500;">${reg.mesa ? reg.mesa.numero : '—'}</span></div>
             <div class="detail-row"><span class="detail-label">Estado</span><span class="detail-value" style="color:${color};font-weight:600;">${label}</span></div>
             <div class="detail-row"><span class="detail-label">Nombre Completo</span><span class="detail-value" style="color:#fff;font-weight:500;">${reg.full_name}</span></div>
             <div class="detail-row"><span class="detail-label">Cédula</span><span class="detail-value">${formatCedula(reg.id_number)}</span></div>
