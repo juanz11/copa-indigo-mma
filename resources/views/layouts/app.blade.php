@@ -65,10 +65,10 @@
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.5rem;
             letter-spacing: 2px;
-            color: var(--gold);
+            color: #fff;
             line-height: 1;
         }
-        .nav-brand-text span { color: #fff; }
+        .nav-brand-text span { color: var(--gold); }
         .nav-yt {
             display: inline-flex;
             align-items: center;
@@ -126,11 +126,11 @@
         footer .footer-logo {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 1.5rem;
-            color: var(--gold);
+            color: #fff;
             letter-spacing: 2px;
             line-height: 1;
         }
-        footer .footer-logo span { color: #fff; }
+        footer .footer-logo span { color: var(--gold); }
         footer p { color: var(--text-muted); font-size: 0.875rem; }
         footer .footer-links {
             display: flex;

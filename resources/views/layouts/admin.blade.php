@@ -40,6 +40,7 @@
             letter-spacing: 2px;
             color: var(--gold);
         }
+        .sidebar-logo h2 span { color: #fff; }
         .sidebar-logo p { font-size: 0.75rem; color: #666; margin-top: 0.15rem; }
         .sidebar-menu { list-style: none; padding: 1rem 0; }
         .sidebar-menu li a {
@@ -264,7 +265,7 @@
 <div class="admin-wrap">
     <aside class="sidebar">
         <div class="sidebar-logo">
-            <h2>COPA ÍNDIGO MMA</h2>
+            <h2>COPA <span>ÍNDIGO</span> MMA</h2>
             <p>Panel Administrativo</p>
         </div>
         <ul class="sidebar-menu">

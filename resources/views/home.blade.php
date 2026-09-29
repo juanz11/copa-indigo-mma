@@ -55,11 +55,11 @@
         font-size: clamp(3.5rem, 10vw, 8rem);
         line-height: 0.9;
         letter-spacing: 4px;
-        color: #fff;
+        color: var(--gold);
         position: relative;
         margin-bottom: 0.5rem;
     }
-    .hero h1 .accent { color: var(--gold); }
+    .hero h1 .accent { color: #fff; }
     .hero-subtitle {
         font-family: 'Bebas Neue', sans-serif;
         font-size: clamp(1.5rem, 4vw, 3rem);
