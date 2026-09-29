@@ -193,7 +193,7 @@
                 </div>
 
                 <p class="form-hint" style="text-align:center;color:var(--gold);font-size:0.85rem;margin-top:-0.75rem;margin-bottom:1.25rem;">
-                    Transferencia y/o Pago Móvil a la Tasa Referencial de Euro del BCV
+                    Transferencia y/o Pago Móvil a la Tasa Oficial del Banco Central de Venezuela
                 </p>
 
                 <div class="form-group">
