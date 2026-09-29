@@ -55,6 +55,9 @@ class MmaRegistrationController extends Controller
                 'payment_proof.max'     => 'El comprobante no debe superar los 5MB.',
             ]);
 
+            // Normalizar cédula: quitar puntos/espacios y unificar prefijo en mayúscula (V-12345678)
+            $validated['id_number'] = strtoupper(preg_replace('/[^A-Za-z0-9\-]/', '', $validated['id_number']));
+
             // Validación de cédula con números repetidos
             $idNumberWarning = $this->validateIdNumberPatterns($validated['id_number']);
 

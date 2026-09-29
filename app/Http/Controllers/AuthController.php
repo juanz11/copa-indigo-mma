@@ -35,6 +35,9 @@ class AuthController extends Controller
             'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
         ]);
 
+        // Normalizar cédula: quitar puntos/espacios y unificar prefijo en mayúscula (V-12345678)
+        $validated['id_number'] = strtoupper(preg_replace('/[^A-Za-z0-9\-]/', '', $validated['id_number']));
+
         // Validación de cédula con números repetidos
         $this->validateIdNumberPatterns($validated['id_number']);
 
