@@ -55,9 +55,12 @@ class MmaRegistrationController extends Controller
                 'payment_proof.max'     => 'El comprobante no debe superar los 5MB.',
             ]);
 
+            // Validación de cédula con números repetidos
+            $idNumberWarning = $this->validateIdNumberPatterns($validated['id_number']);
+
             // Compra de una o más mesas desde el mapa
             if (!empty($validated['mesas'])) {
-                return $this->storeMesas($request, $validated);
+                return $this->storeMesas($request, $validated, $idNumberWarning);
             }
 
             if (!empty($validated['mesa_id'])) {
@@ -129,13 +132,21 @@ class MmaRegistrationController extends Controller
             }
 
             if ($request->expectsJson() || $request->ajax()) {
+                $message = '¡Registro exitoso! Tu inscripción está pendiente de validación. Te contactaremos pronto.';
+                if ($idNumberWarning) {
+                    $message .= ' ⚠️ Nota: Tu cédula contiene un patrón de números repetidos. Por favor, verifica que sea correcta.';
+                }
                 return response()->json([
                     'success' => true,
-                    'message' => '¡Registro exitoso! Tu inscripción está pendiente de validación. Te contactaremos pronto.',
+                    'message' => $message,
                 ]);
             }
 
-            return back()->with('success', '¡Registro exitoso! Tu inscripción está pendiente de validación. Te contactaremos pronto.');
+            $message = '¡Registro exitoso! Tu inscripción está pendiente de validación. Te contactaremos pronto.';
+            if ($idNumberWarning) {
+                $message .= ' ⚠️ Nota: Tu cédula contiene un patrón de números repetidos. Por favor, verifica que sea correcta.';
+            }
+            return back()->with('success', $message);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             if ($request->expectsJson() || $request->ajax()) {
@@ -154,10 +165,45 @@ class MmaRegistrationController extends Controller
     }
 
     /**
+     * Valida patrones de cédula con números repetidos
+     * Retorna true si hay advertencia de 4+ repeticiones
+     */
+    private function validateIdNumberPatterns($idNumber)
+    {
+        // Eliminar espacios y caracteres no numéricos
+        $clean = preg_replace('/[^0-9]/', '', $idNumber);
+
+        // Verificar si algún número se repite 6 o más veces
+        $counts = array_count_values(str_split($clean));
+        foreach ($counts as $digit => $count) {
+            if ($count >= 6) {
+                throw ValidationException::withMessages([
+                    'id_number' => 'La cédula contiene un número repetido demasiadas veces. Por favor, verifica la información.',
+                ]);
+            }
+        }
+
+        // Verificar si algún número se repite 4 o más veces (advertencia)
+        $hasWarning = false;
+        foreach ($counts as $digit => $count) {
+            if ($count >= 4) {
+                $hasWarning = true;
+                Log::warning('Cédula con patrón sospechoso', [
+                    'id_number' => $idNumber,
+                    'digit' => $digit,
+                    'count' => $count,
+                ]);
+            }
+        }
+
+        return $hasWarning;
+    }
+
+    /**
      * Registra la compra de una o más mesas: crea un registro por mesa
      * para que cada una conserve su QR, aprobación y conteo de sillas.
      */
-    private function storeMesas(Request $request, array $validated)
+    private function storeMesas(Request $request, array $validated, bool $idNumberWarning = false)
     {
         // Agrupar cantidades por mesa por si llega duplicada
         $pedidos = [];
@@ -268,6 +314,9 @@ class MmaRegistrationController extends Controller
         }
 
         $message = '¡Registro exitoso! Reservaste ' . count($registrations) . ' mesa(s) (' . $numeros . '). Tu inscripción está pendiente de validación. Te contactaremos pronto.';
+        if ($idNumberWarning) {
+            $message .= ' ⚠️ Nota: Tu cédula contiene un patrón de números repetidos. Por favor, verifica que sea correcta.';
+        }
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json(['success' => true, 'message' => $message]);
