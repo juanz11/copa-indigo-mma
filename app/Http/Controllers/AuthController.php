@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -33,6 +34,9 @@ class AuthController extends Controller
             'password.confirmed' => 'Las contraseñas no coinciden.',
             'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
         ]);
+
+        // Validación de cédula con números repetidos
+        $this->validateIdNumberPatterns($validated['id_number']);
 
         $user = User::create([
             'name'      => $validated['name'],
@@ -74,5 +78,24 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('home');
+    }
+
+    /**
+     * Valida patrones de cédula con números repetidos
+     */
+    private function validateIdNumberPatterns($idNumber)
+    {
+        // Eliminar espacios y caracteres no numéricos
+        $clean = preg_replace('/[^0-9]/', '', $idNumber);
+
+        // Verificar si algún número se repite 6 o más veces
+        $counts = array_count_values(str_split($clean));
+        foreach ($counts as $digit => $count) {
+            if ($count >= 6) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'id_number' => 'La cédula contiene un número repetido demasiadas veces. Por favor, verifica la información.',
+                ]);
+            }
+        }
     }
 }
