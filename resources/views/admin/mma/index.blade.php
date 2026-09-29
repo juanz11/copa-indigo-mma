@@ -114,10 +114,10 @@
                                     <span class="badge" style="background:rgba(37,211,102,0.15);color:#25d366;"><i class="fab fa-whatsapp"></i> Enviado</span>
                                 @elseif($notif->status === 'failed')
                                     <span class="badge" style="background:rgba(231,74,59,0.15);color:#e74a3b;"><i class="fab fa-whatsapp"></i> Fallido</span>
-                                    <a href="{{ \App\Services\WhatsappMessageService::waLink($reg->phone, \App\Services\WhatsappMessageService::messageForClient($reg, $reg->status === 'approved' ? 'approved' : 'rejected')) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;margin-top:0.3rem;" title="Reintentar"><i class="fab fa-whatsapp"></i></a>
+                                    <button type="button" onclick="openWhatsapp({{ $notif->id }}, '{{ \App\Services\WhatsappMessageService::waLink($reg->phone, \App\Services\WhatsappMessageService::messageForClient($reg, $reg->status === 'approved' ? 'approved' : 'rejected')) }}')" class="btn-action" style="background:#25D366;color:#fff;margin-top:0.3rem;" title="Reintentar"><i class="fab fa-whatsapp"></i></button>
                                 @else
                                     <div class="action-btns" style="gap:0.25rem;justify-content:flex-start;">
-                                        <a href="{{ \App\Services\WhatsappMessageService::waLink($reg->phone, \App\Services\WhatsappMessageService::messageForClient($reg, $reg->status === 'approved' ? 'approved' : 'rejected')) }}" target="_blank" class="btn-action" style="background:#25D366;color:#fff;" title="Abrir WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                                        <button type="button" onclick="openWhatsapp({{ $notif->id }}, '{{ \App\Services\WhatsappMessageService::waLink($reg->phone, \App\Services\WhatsappMessageService::messageForClient($reg, $reg->status === 'approved' ? 'approved' : 'rejected')) }}')" class="btn-action" style="background:#25D366;color:#fff;" title="Abrir WhatsApp"><i class="fab fa-whatsapp"></i></button>
                                         <form method="POST" action="{{ route('admin.whatsapp.sent', $notif) }}" style="display:inline;">@csrf @method('PATCH')
                                             <button type="submit" class="btn-action" style="background:#1cc88a;color:#fff;" title="Marcar enviado"><i class="fas fa-check"></i></button>
                                         </form>
@@ -272,6 +272,26 @@
         document.getElementById('deleteModal').classList.add('show');
     }
     function closeDelete() { document.getElementById('deleteModal').classList.remove('show'); }
+
+    function openWhatsapp(notifId, waLink) {
+        // Marcar como enviado antes de abrir
+        fetch(`/admin/whatsapp/${notifId}/sent`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        }).then(() => {
+            // Abrir WhatsApp después de marcar como enviado
+            window.open(waLink, '_blank');
+            // Recargar la página para actualizar el estado
+            setTimeout(() => location.reload(), 500);
+        }).catch(err => {
+            console.error('Error al marcar como enviado:', err);
+            // Si falla, igual abrir WhatsApp
+            window.open(waLink, '_blank');
+        });
+    }
 
     document.querySelectorAll('.m-overlay').forEach(m => {
         m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
