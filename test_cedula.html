@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prueba Formateo Cédula</title>
+</head>
+<body>
+    <h1>Prueba de formateo de cédula</h1>
+    
+    <h2>Ejemplo 1: Con prefijo V-</h2>
+    <input type="text" id="test1" placeholder="Ej: V-12345678" oninput="formatCedula(this)">
+    <p>Valor actual: <span id="value1"></span></p>
+    
+    <h2>Ejemplo 2: Sin prefijo</h2>
+    <input type="text" id="test2" placeholder="Ej: 12345678" oninput="formatCedula(this)">
+    <p>Valor actual: <span id="value2"></span></p>
+    
+    <h2>Ejemplo 3: Con prefijo E-</h2>
+    <input type="text" id="test3" placeholder="Ej: E-87654321" oninput="formatCedula(this)">
+    <p>Valor actual: <span id="value3"></span></p>
+    
+    <script>
+        function formatCedula(input) {
+            // Guardar posición del cursor
+            let start = input.selectionStart;
+            let end = input.selectionEnd;
+            
+            // Obtener el valor actual
+            let value = input.value;
+            
+            // Detectar si tiene prefijo (V-, E-, J-, G-)
+            let prefix = '';
+            if (value.match(/^[VEJGvejg]-/)) {
+                prefix = value.substring(0, 2); // Tomar "V-" o similar
+                value = value.substring(2); // Quitar el prefijo
+            }
+            
+            // Eliminar cualquier punto o caracter no numérico
+            let digits = value.replace(/[^\d]/g, '');
+            
+            // Aplicar formato solo si hay números
+            if (digits) {
+                // Formatear con puntos cada 3 dígitos desde la derecha
+                let formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                
+                // Unir prefijo con números formateados
+                input.value = prefix + formatted;
+                
+                // Calcular nueva posición del cursor
+                // Contar cuántos dígitos hay antes de la posición actual
+                let beforeCursor = input.value.substring(0, start);
+                let digitsBeforeCursor = beforeCursor.replace(/[^\d]/g, '').length;
+                
+                // Encontrar la posición correspondiente en el nuevo valor
+                let newPosition = 0;
+                let digitCount = 0;
+                
+                for (let i = 0; i < input.value.length; i++) {
+                    if (/\d/.test(input.value[i])) {
+                        digitCount++;
+                    }
+                    if (digitCount >= digitsBeforeCursor) {
+                        newPosition = i + 1;
+                        break;
+                    }
+                    newPosition = i + 1;
+                }
+                
+                // Establecer posición del cursor
+                input.setSelectionRange(newPosition, newPosition);
+            } else {
+                // Si no hay dígitos, solo mantener el prefijo si existe
+                input.value = prefix;
+                input.setSelectionRange(prefix.length, prefix.length);
+            }
+            
+            // Actualizar los valores mostrados
+            document.getElementById('value1').textContent = document.getElementById('test1').value;
+            document.getElementById('value2').textContent = document.getElementById('test2').value;
+            document.getElementById('value3').textContent = document.getElementById('test3').value;
+        }
+        
+        // Ejemplos iniciales
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('test1').value = "V-20313463";
+            document.getElementById('test2').value = "20313463";
+            document.getElementById('test3').value = "E-12345678";
+            
+            formatCedula(document.getElementById('test1'));
+            formatCedula(document.getElementById('test2'));
+            formatCedula(document.getElementById('test3'));
+        });
+    </script>
+</body>
+</html>

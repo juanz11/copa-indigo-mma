@@ -18,7 +18,7 @@ class WhatsappMessageService
         $total = number_format($registration->total_amount, 2);
 
         if ($status === 'approved') {
-            $msg = "¡Hola {$name}! 🥊\n\n";
+            $msg = "¡Hola {$name}!\n\n";
             $msg .= "Tu registro para la *Copa Índigo MMA* fue *APROBADO*.\n";
             $msg .= "Entrada: *{$type}*\n";
             if ($registration->mesa) {
@@ -45,7 +45,7 @@ class WhatsappMessageService
      */
     public static function messageForAdmin(MmaRegistration $registration): string
     {
-        $msg = "🆕 *Nuevo registro — Copa Índigo MMA*\n\n";
+        $msg = "*Nuevo registro — Copa Índigo MMA*\n\n";
         $msg .= "Nombre: *" . $registration->full_name . "*\n";
         $msg .= "Cédula: " . $registration->id_number . "\n";
         $msg .= "Teléfono: " . $registration->phone . "\n";

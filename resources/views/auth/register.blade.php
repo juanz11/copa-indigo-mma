@@ -172,11 +172,12 @@
                 let digitCount = 0;
                 
                 for (let i = 0; i < input.value.length; i++) {
-                    if (i === newPosition && digitCount >= digitsBeforeCursor) {
-                        break;
-                    }
                     if (/\d/.test(input.value[i])) {
                         digitCount++;
+                    }
+                    if (digitCount >= digitsBeforeCursor) {
+                        newPosition = i + 1;
+                        break;
                     }
                     newPosition = i + 1;
                 }

@@ -972,6 +972,61 @@
 
 @section('scripts')
 <script>
+    function formatCedula(input) {
+        // Guardar posición del cursor
+        let start = input.selectionStart;
+        let end = input.selectionEnd;
+        
+        // Obtener el valor actual
+        let value = input.value;
+        
+        // Detectar si tiene prefijo (V-, E-, J-, G-)
+        let prefix = '';
+        if (value.match(/^[VEJGvejg]-/)) {
+            prefix = value.substring(0, 2); // Tomar "V-" o similar
+            value = value.substring(2); // Quitar el prefijo
+        }
+        
+        // Eliminar cualquier punto o caracter no numérico
+        let digits = value.replace(/[^\d]/g, '');
+        
+        // Aplicar formato solo si hay números
+        if (digits) {
+            // Formatear con puntos cada 3 dígitos desde la derecha
+            let formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            // Unir prefijo con números formateados
+            input.value = prefix + formatted;
+            
+            // Calcular nueva posición del cursor
+            // Contar cuántos dígitos hay antes de la posición actual
+            let beforeCursor = input.value.substring(0, start);
+            let digitsBeforeCursor = beforeCursor.replace(/[^\d]/g, '').length;
+            
+            // Encontrar la posición correspondiente en el nuevo valor
+            let newPosition = 0;
+            let digitCount = 0;
+            
+            for (let i = 0; i < input.value.length; i++) {
+                if (/\d/.test(input.value[i])) {
+                    digitCount++;
+                }
+                if (digitCount >= digitsBeforeCursor) {
+                    newPosition = i + 1;
+                    break;
+                }
+                newPosition = i + 1;
+            }
+            
+            // Establecer posición del cursor
+            input.setSelectionRange(newPosition, newPosition);
+        } else {
+            // Si no hay dígitos, solo mantener el prefijo si existe
+            input.value = prefix;
+            input.setSelectionRange(prefix.length, prefix.length);
+        }
+    }
+    
     const PRICES = { general: 30, vip: 60, ringside: 100, mesa_general: 50, mesa_vip: 60 };
     const LABELS = { general: 'Entrada General — 30 USD', vip: 'Entrada VIP — 60 USD', ringside: 'Entrada Ringside — 100 USD', mesa_general: 'Mesa General — 50 USD/Silla', mesa_vip: 'Mesa VIP — 60 USD/Silla' };
     const MESA_NUMERO = '{{ request('numero') }}';
@@ -1271,6 +1326,16 @@
             btn.innerHTML = '<i class="fas fa-check"></i> Confirmar Registro';
         });
     }
+    
+    // Formatear el valor inicial si ya existe
+    document.addEventListener('DOMContentLoaded', function() {
+        const cedulaInputs = document.querySelectorAll('input[name="id_number"]');
+        cedulaInputs.forEach(input => {
+            if (input.value) {
+                formatCedula(input);
+            }
+        });
+    });
 
     // El flujo de compra ahora es vista a vista (mapa -> registro)
 </script>
