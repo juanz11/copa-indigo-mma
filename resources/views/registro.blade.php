@@ -135,7 +135,7 @@
             @foreach($items as $item)
                 <div class="resumen-item">
                     <strong>Mesa #{{ $item['numero'] }}</strong>
-                    <span>{{ $item['tipo'] === 'mesa_vip' ? 'VIP' : 'General' }} · {{ $item['cantidad'] }} silla(s) · ${{ number_format($item['subtotal'], 2) }}</span>
+                    <span>{{ $item['tipo'] === 'mesa_vip' ? 'VIP' : 'General' }} · {{ $item['cantidad'] }} silla(s) · ${{ number_format($item['subtotal'], 2) }}{{ !empty($item['descuento']) ? ' · dto. mesa completa ' . ($item['tipo'] === 'mesa_vip' ? '−16,66%' : '−20%') : '' }}</span>
                 </div>
             @endforeach
             <div class="resumen-item">

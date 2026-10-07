@@ -191,6 +191,62 @@
         .tipo-box { padding: 0.75rem; }
         .tipo-mesas { font-size: 0.95rem; }
     }
+
+    /* Promo modal */
+    .promo-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+    .promo-overlay.show { display: flex; }
+    .promo-modal {
+        position: relative;
+        max-width: min(520px, 92vw);
+        border: 1px solid rgba(212,175,55,0.4);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 0 40px rgba(212,175,55,0.25);
+        animation: promoIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    @keyframes promoIn {
+        from { transform: scale(0.92); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    .promo-modal img {
+        max-width: 100%;
+        max-height: 82vh;
+        width: auto;
+        height: auto;
+        display: block;
+        object-fit: contain;
+    }
+    .promo-close {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.6rem;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0,0,0,0.7);
+        color: #fff;
+        font-size: 1.3rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+    }
+    .promo-close:hover { background: var(--gold); color: #000; }
 </style>
 @endsection
 
@@ -250,6 +306,14 @@
         </div>
     </div>
 </section>
+
+<!-- Modal anuncio promoción -->
+<div class="promo-overlay" id="promoOverlay">
+    <div class="promo-modal">
+        <button type="button" class="promo-close" onclick="closePromo()" aria-label="Cerrar">&times;</button>
+        <img src="{{ '/' . rawurlencode('ARMA TU GRUPO 20% - PAG WEB.jpeg') }}" alt="Arma tu grupo — 20% de descuento">
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -338,11 +402,13 @@
 
         seleccionadas.forEach(item => {
             const precio = item.esVip ? 60 : 50;
-            const subtotal = item.cantidad * precio;
+            const esCompleta = item.vendidas === 0 && item.cantidad === item.capacidad;
+            const bruto = item.cantidad * precio;
+            // Mesa completa: VIP −$80 (≈16,66%), General −20%
+            const subtotal = esCompleta ? (item.esVip ? bruto - 80 : bruto * 0.8) : bruto;
             total += subtotal;
             totalSillas += item.cantidad;
 
-            const esCompleta = item.vendidas === 0 && item.cantidad === item.capacidad;
             if (esCompleta && item.esVip) hayCompletaVip = true;
             if (esCompleta && !item.esVip) hayCompletaGeneral = true;
 
@@ -357,15 +423,15 @@
                         <button type="button" onclick="cambiarCantidad('${item.id}', -1)">−</button>
                         <input type="number" value="${item.cantidad}" min="1" max="${item.disponibles}" onchange="setCantidad('${item.id}', this.value)">
                         <button type="button" onclick="cambiarCantidad('${item.id}', 1)">+</button>
-                        <span class="mesa-subtotal">$${subtotal.toFixed(2)}</span>
+                        <span class="mesa-subtotal">${esCompleta ? `<s style="color:#888;font-weight:400;font-size:0.8rem;margin-right:0.25rem;">$${bruto.toFixed(2)}</s><span style="color:#22c55e;font-size:0.75rem;margin-right:0.25rem;">−${item.esVip ? '16,66%' : '20%'}</span>` : ''}$${subtotal.toFixed(2)}</span>
                     </div>
                 </div>`;
         });
 
         if (hayCompletaVip || hayCompletaGeneral) {
             let promos = '';
-            if (hayCompletaVip) promos += '<li>VIP: 1 Servicio Whisky + 2 Raciones de Tequeños</li>';
-            if (hayCompletaGeneral) promos += '<li>General: 1 Servicio de Ron y/o Vodka + 1 Ración de Tequeños</li>';
+            if (hayCompletaVip) promos += '<li>VIP: −16,66% dto. + 1 Servicio Whisky + 2 Raciones de Tequeños</li>';
+            if (hayCompletaGeneral) promos += '<li>General: −20% dto. + 1 Servicio de Ron y/o Vodka + 1 Ración de Tequeños</li>';
             html += `
                 <div class="promo-leyenda" style="margin-top:0.25rem;margin-bottom:0.75rem;padding:0.5rem;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:6px;font-size:0.85rem;color:#e0e0e0;">
                     <strong style="color:var(--gold);display:block;margin-bottom:0.25rem;">Promoción por Mesa Completa:</strong>
@@ -401,6 +467,23 @@
         window.location.href = '{{ route("mma.registro") }}?' + params.join('&');
         return false;
     }
+
+    // Modal de anuncio al abrir la página
+    const promoOverlay = document.getElementById('promoOverlay');
+
+    function closePromo() {
+        promoOverlay.classList.remove('show');
+    }
+
+    promoOverlay.addEventListener('click', function (e) {
+        if (e.target === promoOverlay) closePromo();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closePromo();
+    });
+
+    promoOverlay.classList.add('show');
 
     @if(session('error'))
         showAlert(@json(session('error')), 'error');

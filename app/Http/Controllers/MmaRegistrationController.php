@@ -84,6 +84,13 @@ class MmaRegistrationController extends Controller
                 $validated['ticket_type'] = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
                 $precio = $validated['ticket_type'] === 'mesa_vip' ? 60 : 50;
                 $validated['total_amount'] = $validated['quantity'] * $precio;
+
+                // Mesa completa: VIP −$80 (≈16,66%), General −20%
+                if ($vendidas === 0 && (int) $validated['quantity'] === (int) $mesa->capacidad) {
+                    $validated['total_amount'] -= $validated['ticket_type'] === 'mesa_vip'
+                        ? 80
+                        : $validated['total_amount'] * 0.2;
+                }
             }
 
             $paymentProofPath = null;
@@ -239,12 +246,18 @@ class MmaRegistrationController extends Controller
                 $tipo = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
                 $precio = $tipo === 'mesa_vip' ? 60 : 50;
 
+                // Mesa completa: VIP −$80 (≈16,66%), General −20%
+                $subtotal = $cantidad * $precio;
+                if ($vendidas === 0 && $cantidad === (int) $mesa->capacidad) {
+                    $subtotal -= $tipo === 'mesa_vip' ? 80 : $subtotal * 0.2;
+                }
+
                 $items[] = [
                     'mesa'     => $mesa,
                     'cantidad' => $cantidad,
                     'tipo'     => $tipo,
                     'vendidas' => $vendidas,
-                    'subtotal' => $cantidad * $precio,
+                    'subtotal' => $subtotal,
                 ];
             }
 
@@ -375,6 +388,12 @@ class MmaRegistrationController extends Controller
             $precio = $tipo === 'mesa_vip' ? 60 : 50;
             $cantidad = min($cantidadPedida, $disponibles);
             $subtotal = $cantidad * $precio;
+
+            // Mesa completa: VIP −$80 (≈16,66%), General −20%
+            $descuento = $vendidas === 0 && $cantidad === (int) $mesa->capacidad;
+            if ($descuento) {
+                $subtotal -= $tipo === 'mesa_vip' ? 80 : $subtotal * 0.2;
+            }
             $total += $subtotal;
 
             $items[] = [
@@ -384,6 +403,7 @@ class MmaRegistrationController extends Controller
                 'cantidad'    => $cantidad,
                 'precio'      => $precio,
                 'subtotal'    => $subtotal,
+                'descuento'   => $descuento,
                 'disponibles' => $disponibles,
                 'vendidas'    => $vendidas,
             ];
