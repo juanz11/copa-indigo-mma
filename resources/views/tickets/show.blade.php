@@ -86,7 +86,7 @@
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Cantidad</span>
-                <span class="ticket-value">{{ $registration->quantity }}</span>
+                <span class="ticket-value">{{ $registration->quantity }}{{ $registration->child_seats > 0 ? ' (' . $registration->child_seats . ' niño(s) gratis)' : '' }}</span>
             </div>
             <div class="ticket-row">
                 <span class="ticket-label">Total</span>

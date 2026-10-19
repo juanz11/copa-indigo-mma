@@ -135,7 +135,7 @@
             @foreach($items as $item)
                 <div class="resumen-item">
                     <strong>Mesa #{{ $item['numero'] }}</strong>
-                    <span>{{ $item['tipo'] === 'mesa_vip' ? 'VIP' : 'General' }} · {{ $item['cantidad'] }} silla(s) · ${{ number_format($item['subtotal'], 2) }}{{ !empty($item['descuento']) ? ' · dto. mesa completa ' . ($item['tipo'] === 'mesa_vip' ? '−16,66%' : '−20%') : '' }}</span>
+                    <span>{{ $item['tipo'] === 'mesa_vip' ? 'VIP' : 'General' }} · {{ $item['cantidad'] }} adulto(s){{ !empty($item['ninos']) ? ' + ' . $item['ninos'] . ' niño(s) gratis' : '' }} · ${{ number_format($item['subtotal'], 2) }}{{ !empty($item['descuento']) ? ' · dto. mesa completa ' . ($item['tipo'] === 'mesa_vip' ? '−16,66%' : '−20%') : '' }}</span>
                 </div>
             @endforeach
             <div class="resumen-item">
@@ -153,6 +153,7 @@
                 @foreach($items as $i => $item)
                     <input type="hidden" name="mesas[{{ $i }}][id]" value="{{ $item['mesa']->id }}">
                     <input type="hidden" name="mesas[{{ $i }}][cantidad]" value="{{ $item['cantidad'] }}">
+                    <input type="hidden" name="mesas[{{ $i }}][ninos]" value="{{ $item['ninos'] ?? 0 }}">
                 @endforeach
 
                 <div class="form-row">

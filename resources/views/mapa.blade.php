@@ -154,7 +154,7 @@
     .mapa-sidebar .empty-state { color: #888; font-size: 0.9rem; text-align: center; margin: 2rem 0; }
     .selector-tipo { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
     .selector-tipo label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: #e0e0e0; font-size: 0.9rem; }
-    .cantidad-control { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .cantidad-control { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
     .cantidad-control button {
         width: 38px; height: 38px; border: 1px solid var(--gold); background: transparent; color: var(--gold); border-radius: 6px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
     }
@@ -185,7 +185,7 @@
     .mesa-tag { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: #aaa; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: 0.1rem 0.4rem; margin-left: 0.35rem; }
     .mesa-tag.vip { color: var(--gold); border-color: rgba(212,175,55,0.4); }
     .mesa-remove { background: transparent; border: none; color: #e74a3b; font-size: 1.3rem; cursor: pointer; line-height: 1; padding: 0 0.25rem; }
-    .mesa-subtotal { margin-left: auto; color: var(--gold); font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
+    .mesa-subtotal { margin-left: auto; color: var(--gold); font-weight: 700; font-size: 0.95rem; white-space: nowrap; flex-basis: 100%; text-align: right; }
     @media (max-width: 480px) {
         .tipo-grid { grid-template-columns: 1fr; }
         .tipo-box { padding: 0.75rem; }
@@ -357,6 +357,7 @@
                 vendidas: vendidas,
                 disponibles: disponibles,
                 cantidad: disponibles,
+                ninos: 0,
                 esVip: parseInt(numero) <= 14,
             });
             elemento.classList.add('seleccionada');
@@ -376,7 +377,7 @@
     function cambiarCantidad(mesaId, delta) {
         const item = seleccionadas.get(mesaId);
         if (!item) return;
-        item.cantidad = Math.min(Math.max(item.cantidad + delta, 1), item.disponibles);
+        item.cantidad = Math.min(Math.max(item.cantidad + delta, 1), item.disponibles - item.ninos);
         renderPanel();
     }
 
@@ -384,7 +385,28 @@
         const item = seleccionadas.get(mesaId);
         if (!item) return;
         const v = parseInt(value) || 1;
-        item.cantidad = Math.min(Math.max(v, 1), item.disponibles);
+        item.cantidad = Math.min(Math.max(v, 1), item.disponibles - item.ninos);
+        renderPanel();
+    }
+
+    function cambiarNinos(mesaId, delta) {
+        const item = seleccionadas.get(mesaId);
+        if (!item) return;
+        // Máximo 3 niños gratis por mesa; ocupan silla y desplazan adultos si está llena
+        item.ninos = Math.min(Math.max(item.ninos + delta, 0), Math.min(3, item.disponibles - 1));
+        if (item.cantidad + item.ninos > item.disponibles) {
+            item.cantidad = item.disponibles - item.ninos;
+        }
+        renderPanel();
+    }
+
+    function setNinos(mesaId, value) {
+        const item = seleccionadas.get(mesaId);
+        if (!item) return;
+        item.ninos = Math.min(Math.max(parseInt(value) || 0, 0), Math.min(3, item.disponibles - 1));
+        if (item.cantidad + item.ninos > item.disponibles) {
+            item.cantidad = item.disponibles - item.ninos;
+        }
         renderPanel();
     }
 
@@ -397,6 +419,7 @@
         let html = '';
         let total = 0;
         let totalSillas = 0;
+        let totalNinos = 0;
         let hayCompletaVip = false;
         let hayCompletaGeneral = false;
 
@@ -404,10 +427,11 @@
             const precio = item.esVip ? 60 : 50;
             const esCompleta = item.vendidas === 0 && item.cantidad === item.capacidad;
             const bruto = item.cantidad * precio;
-            // Mesa completa: VIP −$80 (≈16,66%), General −20%
-            const subtotal = esCompleta ? (item.esVip ? bruto - 80 : bruto * 0.8) : bruto;
+            // Mesa completa: VIP −$80 (≈16,66%), General −20% (mínimo: 1 silla pagada)
+            const subtotal = esCompleta ? Math.max(item.esVip ? bruto - 80 : bruto * 0.8, precio) : bruto;
             total += subtotal;
-            totalSillas += item.cantidad;
+            totalSillas += item.cantidad + item.ninos;
+            totalNinos += item.ninos;
 
             if (esCompleta && item.esVip) hayCompletaVip = true;
             if (esCompleta && !item.esVip) hayCompletaGeneral = true;
@@ -419,11 +443,19 @@
                         <button type="button" class="mesa-remove" onclick="quitarMesa('${item.id}')" title="Quitar mesa">&times;</button>
                     </div>
                     <p class="info-sillas" style="margin-bottom:0.4rem;">$${precio}/silla &middot; Disponibles: <strong>${item.disponibles}</strong>${item.vendidas > 0 ? ` &middot; Vendidas: ${item.vendidas}/${item.capacidad}` : ''}</p>
-                    <div class="cantidad-control" style="margin-bottom:0;">
+                    <div class="cantidad-control" style="margin-bottom:0.4rem;">
+                        <span style="color:#aaa;font-size:0.8rem;width:52px;">Adultos</span>
                         <button type="button" onclick="cambiarCantidad('${item.id}', -1)">−</button>
-                        <input type="number" value="${item.cantidad}" min="1" max="${item.disponibles}" onchange="setCantidad('${item.id}', this.value)">
+                        <input type="number" value="${item.cantidad}" min="1" max="${item.disponibles - item.ninos}" onchange="setCantidad('${item.id}', this.value)">
                         <button type="button" onclick="cambiarCantidad('${item.id}', 1)">+</button>
                         <span class="mesa-subtotal">${esCompleta ? `<s style="color:#888;font-weight:400;font-size:0.8rem;margin-right:0.25rem;">$${bruto.toFixed(2)}</s><span style="color:#22c55e;font-size:0.75rem;margin-right:0.25rem;">−${item.esVip ? '16,66%' : '20%'}</span>` : ''}$${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="cantidad-control" style="margin-bottom:0;">
+                        <span style="color:#22c55e;font-size:0.8rem;width:52px;">Niños</span>
+                        <button type="button" onclick="cambiarNinos('${item.id}', -1)">−</button>
+                        <input type="number" value="${item.ninos}" min="0" max="${Math.min(3, item.disponibles - item.cantidad)}" onchange="setNinos('${item.id}', this.value)">
+                        <button type="button" onclick="cambiarNinos('${item.id}', 1)">+</button>
+                        <span style="color:#22c55e;font-size:0.75rem;margin-left:auto;">Gratis · máx. 3</span>
                     </div>
                 </div>`;
         });
@@ -441,7 +473,7 @@
 
         html += `
             <div class="total-box">
-                <span>${seleccionadas.size} mesa(s) &middot; ${totalSillas} silla(s)</span>
+                <span>${seleccionadas.size} mesa(s) &middot; ${totalSillas} silla(s)${totalNinos > 0 ? ` &middot; <span style="color:#22c55e;">${totalNinos} niño(s) gratis</span>` : ''}</span>
                 <span class="amount" id="total-display">${total.toFixed(2)} USD</span>
             </div>
             <a href="#" class="btn-mesa btn-continuar" id="btn-continuar" onclick="return continuarRegistro()">Continuar Registro</a>
@@ -461,6 +493,7 @@
         seleccionadas.forEach(item => {
             params.push(encodeURIComponent(`mesas[${i}][id]`) + '=' + encodeURIComponent(item.id));
             params.push(encodeURIComponent(`mesas[${i}][cantidad]`) + '=' + encodeURIComponent(item.cantidad));
+            params.push(encodeURIComponent(`mesas[${i}][ninos]`) + '=' + encodeURIComponent(item.ninos));
             i++;
         });
 

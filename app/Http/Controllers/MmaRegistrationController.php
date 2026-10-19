@@ -33,9 +33,11 @@ class MmaRegistrationController extends Controller
                 'payment_reference' => 'nullable|string|max:255',
                 'payment_proof'     => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
                 'mesa_id'           => 'nullable|exists:mesas,id',
+                'ninos'             => 'nullable|integer|min:0|max:3',
                 'mesas'             => 'nullable|array|min:1',
                 'mesas.*.id'        => 'required|integer|exists:mesas,id',
                 'mesas.*.cantidad'  => 'required|integer|min:1',
+                'mesas.*.ninos'     => 'nullable|integer|min:0|max:3',
             ], [
                 'full_name.required'    => 'El nombre completo es obligatorio.',
                 'id_number.required'    => 'La cédula es obligatoria.',
@@ -51,6 +53,8 @@ class MmaRegistrationController extends Controller
                 'mesas.required'                => 'Debes seleccionar al menos una mesa.',
                 'mesas.*.id.exists'             => 'Una de las mesas seleccionadas no es válida.',
                 'mesas.*.cantidad.min'          => 'Debe adquirir al menos 1 silla por mesa.',
+                'ninos.max'                     => 'Máximo 3 sillas de niño gratis por mesa.',
+                'mesas.*.ninos.max'             => 'Máximo 3 sillas de niño gratis por mesa.',
                 'payment_proof.mimes'   => 'El comprobante debe ser JPG, PNG o PDF.',
                 'payment_proof.max'     => 'El comprobante no debe superar los 5MB.',
             ]);
@@ -69,15 +73,17 @@ class MmaRegistrationController extends Controller
             if (!empty($validated['mesa_id'])) {
                 $mesa = Mesa::withSum('registrations', 'quantity')->findOrFail($validated['mesa_id']);
                 $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
+                $ninos = (int) ($validated['ninos'] ?? 0);
+                $sillas = $validated['quantity'] + $ninos;
 
-                if ($vendidas + $validated['quantity'] > $mesa->capacidad) {
+                if ($vendidas + $sillas > $mesa->capacidad) {
                     throw ValidationException::withMessages([
                         'quantity' => 'Solo quedan ' . ($mesa->capacidad - $vendidas) . ' sillas disponibles en la mesa #' . $mesa->numero . '.',
                     ]);
                 }
 
                 $mesa->update([
-                    'estado' => ($vendidas + $validated['quantity'] >= $mesa->capacidad) ? 'ocupada' : 'reservada',
+                    'estado' => ($vendidas + $sillas >= $mesa->capacidad) ? 'ocupada' : 'reservada',
                 ]);
 
                 // El tipo depende del número de mesa: 1-14 VIP, 15-25 General
@@ -85,12 +91,16 @@ class MmaRegistrationController extends Controller
                 $precio = $validated['ticket_type'] === 'mesa_vip' ? 60 : 50;
                 $validated['total_amount'] = $validated['quantity'] * $precio;
 
-                // Mesa completa: VIP −$80 (≈16,66%), General −20%
+                // Mesa completa (todas las sillas de adulto): VIP −$80 (≈16,66%), General −20%
                 if ($vendidas === 0 && (int) $validated['quantity'] === (int) $mesa->capacidad) {
-                    $validated['total_amount'] -= $validated['ticket_type'] === 'mesa_vip'
-                        ? 80
-                        : $validated['total_amount'] * 0.2;
+                    $validated['total_amount'] = max(
+                        $validated['total_amount'] - ($validated['ticket_type'] === 'mesa_vip' ? 80 : $validated['total_amount'] * 0.2),
+                        $precio
+                    );
                 }
+
+                $validated['quantity'] = $sillas;
+                $validated['child_seats'] = $ninos;
             }
 
             $paymentProofPath = null;
@@ -109,6 +119,7 @@ class MmaRegistrationController extends Controller
                 'social_media'      => $validated['social_media'] ?? null,
                 'ticket_type'       => $validated['ticket_type'],
                 'quantity'          => $validated['quantity'],
+                'child_seats'       => $validated['child_seats'] ?? 0,
                 'total_amount'      => $validated['total_amount'],
                 'payment_method'    => $validated['payment_method'] ?? null,
                 'payment_reference' => $validated['payment_reference'] ?? null,
@@ -219,7 +230,8 @@ class MmaRegistrationController extends Controller
         $pedidos = [];
         foreach ($validated['mesas'] as $item) {
             $id = (int) $item['id'];
-            $pedidos[$id] = ($pedidos[$id] ?? 0) + (int) $item['cantidad'];
+            $pedidos[$id]['cantidad'] = ($pedidos[$id]['cantidad'] ?? 0) + (int) $item['cantidad'];
+            $pedidos[$id]['ninos']    = ($pedidos[$id]['ninos'] ?? 0) + (int) ($item['ninos'] ?? 0);
         }
 
         $registrations = DB::transaction(function () use ($pedidos, $validated, $request) {
@@ -232,12 +244,16 @@ class MmaRegistrationController extends Controller
             // Validar disponibilidad de todas las mesas antes de crear nada
             $items = [];
             $errores = [];
-            foreach ($pedidos as $mesaId => $cantidad) {
+            foreach ($pedidos as $mesaId => $pedido) {
+                $cantidad = $pedido['cantidad'];
+                $ninos    = min($pedido['ninos'], 3);
+                $sillas   = $cantidad + $ninos;
+
                 $mesa = $mesas->get($mesaId);
                 $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
                 $restantes = $mesa->capacidad - $vendidas;
 
-                if ($cantidad > $restantes) {
+                if ($sillas > $restantes) {
                     $errores[] = 'Solo quedan ' . max(0, $restantes) . ' sillas disponibles en la mesa #' . $mesa->numero . '.';
                     continue;
                 }
@@ -246,15 +262,17 @@ class MmaRegistrationController extends Controller
                 $tipo = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
                 $precio = $tipo === 'mesa_vip' ? 60 : 50;
 
-                // Mesa completa: VIP −$80 (≈16,66%), General −20%
+                // Mesa completa (todas las sillas de adulto): VIP −$80 (≈16,66%), General −20%
                 $subtotal = $cantidad * $precio;
                 if ($vendidas === 0 && $cantidad === (int) $mesa->capacidad) {
-                    $subtotal -= $tipo === 'mesa_vip' ? 80 : $subtotal * 0.2;
+                    $subtotal = max($subtotal - ($tipo === 'mesa_vip' ? 80 : $subtotal * 0.2), $precio);
                 }
 
                 $items[] = [
                     'mesa'     => $mesa,
                     'cantidad' => $cantidad,
+                    'ninos'    => $ninos,
+                    'sillas'   => $sillas,
                     'tipo'     => $tipo,
                     'vendidas' => $vendidas,
                     'subtotal' => $subtotal,
@@ -284,7 +302,8 @@ class MmaRegistrationController extends Controller
                     'email'             => $validated['email'] ?? null,
                     'social_media'      => $validated['social_media'] ?? null,
                     'ticket_type'       => $item['tipo'],
-                    'quantity'          => $item['cantidad'],
+                    'quantity'          => $item['sillas'],
+                    'child_seats'       => $item['ninos'],
                     'total_amount'      => $item['subtotal'],
                     'payment_method'    => $validated['payment_method'] ?? null,
                     'payment_reference' => $validated['payment_reference'] ?? null,
@@ -294,7 +313,7 @@ class MmaRegistrationController extends Controller
                 ]);
 
                 $mesa->update([
-                    'estado' => ($item['vendidas'] + $item['cantidad'] >= $mesa->capacidad) ? 'ocupada' : 'reservada',
+                    'estado' => ($item['vendidas'] + $item['sillas'] >= $mesa->capacidad) ? 'ocupada' : 'reservada',
                 ]);
             }
 
@@ -349,6 +368,7 @@ class MmaRegistrationController extends Controller
                 'mesas' => [[
                     'id'       => $request->input('mesa_id'),
                     'cantidad' => $request->input('cantidad', 1),
+                    'ninos'    => $request->input('ninos', 0),
                 ]],
             ]);
         }
@@ -357,13 +377,15 @@ class MmaRegistrationController extends Controller
             'mesas'            => 'required|array|min:1',
             'mesas.*.id'       => 'required|integer|exists:mesas,id',
             'mesas.*.cantidad' => 'nullable|integer|min:1',
+            'mesas.*.ninos'    => 'nullable|integer|min:0|max:3',
         ]);
 
         // Agrupar cantidades por mesa por si llega duplicada
         $pedidos = [];
         foreach ($validated['mesas'] as $item) {
             $id = (int) $item['id'];
-            $pedidos[$id] = ($pedidos[$id] ?? 0) + max((int) ($item['cantidad'] ?? 1), 1);
+            $pedidos[$id]['cantidad'] = ($pedidos[$id]['cantidad'] ?? 0) + max((int) ($item['cantidad'] ?? 1), 1);
+            $pedidos[$id]['ninos']    = ($pedidos[$id]['ninos'] ?? 0) + max((int) ($item['ninos'] ?? 0), 0);
         }
 
         $mesas = Mesa::withSum('registrations', 'quantity')
@@ -374,7 +396,7 @@ class MmaRegistrationController extends Controller
         $items = [];
         $total = 0;
 
-        foreach ($pedidos as $mesaId => $cantidadPedida) {
+        foreach ($pedidos as $mesaId => $pedido) {
             $mesa = $mesas->get($mesaId);
             $vendidas = (int) ($mesa->registrations_sum_quantity ?? 0);
             $disponibles = max(0, $mesa->capacidad - $vendidas);
@@ -386,13 +408,17 @@ class MmaRegistrationController extends Controller
             // Las mesas del 1 al 14 son VIP, del 15 al 25 son General
             $tipo = ((int) $mesa->numero <= 14) ? 'mesa_vip' : 'mesa_general';
             $precio = $tipo === 'mesa_vip' ? 60 : 50;
-            $cantidad = min($cantidadPedida, $disponibles);
+
+            // Adultos tienen prioridad; los niños gratis ocupan el cupo restante (máx. 3)
+            $cantidad = min($pedido['cantidad'], $disponibles);
+            $ninos    = min($pedido['ninos'], 3, $disponibles - $cantidad);
+            $sillas   = $cantidad + $ninos;
             $subtotal = $cantidad * $precio;
 
-            // Mesa completa: VIP −$80 (≈16,66%), General −20%
+            // Mesa completa (todas las sillas de adulto): VIP −$80 (≈16,66%), General −20%
             $descuento = $vendidas === 0 && $cantidad === (int) $mesa->capacidad;
             if ($descuento) {
-                $subtotal -= $tipo === 'mesa_vip' ? 80 : $subtotal * 0.2;
+                $subtotal = max($subtotal - ($tipo === 'mesa_vip' ? 80 : $subtotal * 0.2), $precio);
             }
             $total += $subtotal;
 
@@ -401,6 +427,8 @@ class MmaRegistrationController extends Controller
                 'numero'      => $mesa->numero,
                 'tipo'        => $tipo,
                 'cantidad'    => $cantidad,
+                'ninos'       => $ninos,
+                'sillas'      => $sillas,
                 'precio'      => $precio,
                 'subtotal'    => $subtotal,
                 'descuento'   => $descuento,

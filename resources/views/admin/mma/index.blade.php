@@ -88,7 +88,7 @@
                                 <div style="font-size:0.72rem;color:#999;margin-top:0.25rem;">Mesa #{{ $reg->mesa->numero }}</div>
                             @endif
                         </td>
-                        <td style="text-align:center;">{{ $reg->quantity }}</td>
+                        <td style="text-align:center;">{{ $reg->quantity }}{{ $reg->child_seats > 0 ? ' (' . $reg->child_seats . ' niños)' : '' }}</td>
                         <td style="color:var(--gold);font-weight:600;">${{ number_format($reg->total_amount, 2) }}</td>
                         <td style="text-transform:capitalize;">{{ $reg->payment_method ?? '—' }}</td>
                         <td>
@@ -255,7 +255,7 @@
             <div class="detail-row"><span class="detail-label">Correo</span><span class="detail-value">${reg.email || '—'}</span></div>
             <div class="detail-row"><span class="detail-label">Red Social</span><span class="detail-value">${reg.social_media || '—'}</span></div>
             <div class="detail-row"><span class="detail-label">Tipo de Entrada</span><span class="detail-value" style="color:var(--gold);font-weight:600;">${ticketLabels[reg.ticket_type] || reg.ticket_type}</span></div>
-            <div class="detail-row"><span class="detail-label">Cantidad</span><span class="detail-value">${reg.quantity}</span></div>
+            <div class="detail-row"><span class="detail-label">Cantidad</span><span class="detail-value">${reg.quantity}${reg.child_seats > 0 ? ` (${reg.child_seats} niño(s) gratis)` : ''}</span></div>
             <div class="detail-row"><span class="detail-label">Total</span><span class="detail-value" style="color:var(--gold);font-weight:700;">${parseFloat(reg.total_amount).toFixed(2)} USD</span></div>
             <div class="detail-row"><span class="detail-label">Método de Pago</span><span class="detail-value" style="text-transform:capitalize;">${reg.payment_method || '—'}</span></div>
             <div class="detail-row"><span class="detail-label">Referencia</span><span class="detail-value">${reg.payment_reference || '—'}</span></div>

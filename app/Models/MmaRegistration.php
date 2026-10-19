@@ -20,6 +20,7 @@ class MmaRegistration extends Model
         'social_media',
         'ticket_type',
         'quantity',
+        'child_seats',
         'total_amount',
         'payment_method',
         'payment_reference',

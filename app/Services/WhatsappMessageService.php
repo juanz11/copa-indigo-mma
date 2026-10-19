@@ -25,6 +25,9 @@ class WhatsappMessageService
                 $msg .= "Mesa: *#{$registration->mesa->numero}*\n";
             }
             $msg .= "Cantidad de sillas: *{$qty}*\n";
+            if ($registration->child_seats > 0) {
+                $msg .= "Niños (gratis): *{$registration->child_seats}*\n";
+            }
             $msg .= "Total pagado: *\${$total} USD*\n\n";
             $msg .= "Te esperamos el *Sábado 24 de Octubre a las 8:00 p.m.* en el *Hotel Hesperia Valencia*.\n";
             $msg .= "Presenta este mensaje en la entrada.\n\n";
@@ -53,7 +56,7 @@ class WhatsappMessageService
         if ($registration->mesa) {
             $msg .= "Mesa: #" . $registration->mesa->numero . "\n";
         }
-        $msg .= "Sillas: " . $registration->quantity . "\n";
+        $msg .= "Sillas: " . $registration->quantity . ($registration->child_seats > 0 ? " ({$registration->child_seats} niños gratis)" : '') . "\n";
         $msg .= "Total: \$" . number_format($registration->total_amount, 2) . " USD\n";
         $msg .= "Método: " . ($registration->payment_method ? ucfirst($registration->payment_method) : 'N/A') . "\n";
         $msg .= "Ref: " . ($registration->payment_reference ?: 'N/A') . "\n\n";
