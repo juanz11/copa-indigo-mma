@@ -192,61 +192,6 @@
         .tipo-mesas { font-size: 0.95rem; }
     }
 
-    /* Promo modal */
-    .promo-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.85);
-        backdrop-filter: blur(4px);
-        z-index: 10000;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem;
-    }
-    .promo-overlay.show { display: flex; }
-    .promo-modal {
-        position: relative;
-        max-width: min(520px, 92vw);
-        border: 1px solid rgba(212,175,55,0.4);
-        border-radius: 14px;
-        overflow: hidden;
-        box-shadow: 0 0 40px rgba(212,175,55,0.25);
-        animation: promoIn 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    @keyframes promoIn {
-        from { transform: scale(0.92); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-    }
-    .promo-modal img {
-        max-width: 100%;
-        max-height: 82vh;
-        width: auto;
-        height: auto;
-        display: block;
-        object-fit: contain;
-    }
-    .promo-close {
-        position: absolute;
-        top: 0.6rem;
-        right: 0.6rem;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border: none;
-        background: rgba(0,0,0,0.7);
-        color: #fff;
-        font-size: 1.3rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-    }
-    .promo-close:hover { background: var(--gold); color: #000; }
 </style>
 @endsection
 
@@ -307,13 +252,6 @@
     </div>
 </section>
 
-<!-- Modal anuncio promoción -->
-<div class="promo-overlay" id="promoOverlay">
-    <div class="promo-modal">
-        <button type="button" class="promo-close" onclick="closePromo()" aria-label="Cerrar">&times;</button>
-        <img src="{{ '/' . rawurlencode('ARMA TU GRUPO 20% - PAG WEB.jpeg') }}" alt="Arma tu grupo — 20% de descuento">
-    </div>
-</div>
 @endsection
 
 @section('scripts')
@@ -500,23 +438,6 @@
         window.location.href = '{{ route("mma.registro") }}?' + params.join('&');
         return false;
     }
-
-    // Modal de anuncio al abrir la página
-    const promoOverlay = document.getElementById('promoOverlay');
-
-    function closePromo() {
-        promoOverlay.classList.remove('show');
-    }
-
-    promoOverlay.addEventListener('click', function (e) {
-        if (e.target === promoOverlay) closePromo();
-    });
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closePromo();
-    });
-
-    promoOverlay.classList.add('show');
 
     @if(session('error'))
         showAlert(@json(session('error')), 'error');
