@@ -44,6 +44,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     })->name('dashboard');
 
     Route::get('/registros', [MmaRegistrationController::class, 'adminIndex'])->name('mma.index');
+    Route::get('/registros/invitados', [MmaRegistrationController::class, 'exportGuests'])->name('mma.invitados');
     Route::get('/mesas', [MapaController::class, 'adminMesas'])->name('mesas.index');
     Route::patch('/mesas/{mesa}', [MapaController::class, 'updateMesa'])->name('mesas.update');
     Route::patch('/registros/{registration}/status', [MmaRegistrationController::class, 'updateStatus'])->name('mma.update-status');

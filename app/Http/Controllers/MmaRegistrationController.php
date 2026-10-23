@@ -465,6 +465,110 @@ class MmaRegistrationController extends Controller
         return view('admin.mma.index', compact('registrations', 'stats'));
     }
 
+    /**
+     * Descarga la lista de invitados en PDF agrupada por cédula:
+     * si la misma cédula compró varias veces, se consolida en una sola fila
+     * con el detalle de mesas/sillas para la logística del evento.
+     * Con ?formato=csv descarga el CSV plano.
+     */
+    public function exportGuests(Request $request)
+    {
+        $guests = $this->buildGuestList();
+
+        if ($request->query('formato') === 'csv') {
+            return $this->downloadGuestsCsv($guests);
+        }
+
+        $logo = file_exists(public_path('IMG_1257.PNG'))
+            ? base64_encode(file_get_contents(public_path('IMG_1257.PNG')))
+            : null;
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.mma.invitados', [
+            'guests'  => $guests,
+            'logo'    => $logo,
+        ])->setPaper('letter', 'landscape')->download('invitados-copa-indigo-mma.pdf');
+    }
+
+    /**
+     * Agrupa los registros por cédula para la lista de invitados.
+     */
+    private function buildGuestList(): array
+    {
+        $registrations = MmaRegistration::with('mesa')->get();
+
+        $statusMap = ['pending' => 'Pendiente', 'approved' => 'Aprobado', 'rejected' => 'Rechazado'];
+
+        $guests = [];
+        foreach ($registrations as $reg) {
+            $key = strtoupper(preg_replace('/[^A-Z0-9]/i', '', $reg->id_number)) ?: 'SIN-CEDULA-' . $reg->id;
+
+            if (!isset($guests[$key])) {
+                $guests[$key] = [
+                    'cedula'  => $reg->id_number,
+                    'nombre'  => $reg->full_name,
+                    'telefono' => $reg->phone,
+                    'email'   => $reg->email,
+                    'detalle' => [],
+                    'mesas'   => [],
+                    'sillas'  => 0,
+                    'ninos'   => 0,
+                    'total'   => 0,
+                    'estados' => [],
+                ];
+            }
+
+            $g = &$guests[$key];
+            $adultos = $reg->quantity - $reg->child_seats;
+
+            $g['detalle'][] = $reg->mesa
+                ? 'Mesa #' . $reg->mesa->numero . ' ' . ($reg->ticket_type === 'mesa_vip' ? 'VIP' : 'General')
+                    . " ({$adultos} adultos" . ($reg->child_seats ? " + {$reg->child_seats} niños" : '') . ')'
+                : ucwords(str_replace('_', ' ', $reg->ticket_type)) . ' x' . $reg->quantity;
+
+            if ($reg->mesa) {
+                $g['mesas'][] = '#' . $reg->mesa->numero;
+            }
+            $g['sillas'] += $adultos;
+            $g['ninos']  += $reg->child_seats;
+            $g['total']  += $reg->total_amount;
+            $g['estados'][$statusMap[$reg->status] ?? $reg->status] = true;
+        }
+
+        // Ordenar alfabéticamente por nombre
+        uasort($guests, fn ($a, $b) => strcasecmp($a['nombre'], $b['nombre']));
+
+        return $guests;
+    }
+
+    private function downloadGuestsCsv(array $guests)
+    {
+        return response()->streamDownload(function () use ($guests) {
+            $out = fopen('php://output', 'w');
+            fwrite($out, "\xEF\xBB\xBF"); // BOM para que Excel abra el UTF-8 bien
+
+            fputcsv($out, ['Cédula', 'Nombre', 'Teléfono', 'Email', 'Mesas', 'Sillas adultos', 'Niños gratis', 'Total USD', 'Estado', 'Detalle']);
+
+            foreach ($guests as $g) {
+                fputcsv($out, [
+                    $g['cedula'],
+                    $g['nombre'],
+                    $g['telefono'],
+                    $g['email'] ?: '—',
+                    implode(' ', array_unique($g['mesas'])) ?: '—',
+                    $g['sillas'],
+                    $g['ninos'],
+                    number_format($g['total'], 2, '.', ''),
+                    implode(' / ', array_keys($g['estados'])),
+                    implode(' | ', $g['detalle']),
+                ]);
+            }
+
+            fclose($out);
+        }, 'invitados-copa-indigo-mma.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
+    }
+
     public function showPaymentProof($path)
     {
         if (strpos($path, '..') !== false || !$path || str_starts_with($path, '/')) {

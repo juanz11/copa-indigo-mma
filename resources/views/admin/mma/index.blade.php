@@ -37,7 +37,12 @@
 <div class="table-card">
     <div class="table-card-header">
         <h2><i class="fas fa-list" style="color:var(--gold);margin-right:0.5rem;"></i>Lista de Registros</h2>
-        <span style="font-size:0.8rem;color:#666;">{{ $registrations->total() }} registros en total</span>
+        <div style="display:flex;align-items:center;gap:1rem;">
+            <a href="{{ route('admin.mma.invitados') }}" download style="background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;padding:0.5rem 1rem;border-radius:6px;font-weight:700;font-size:0.8rem;text-decoration:none;white-space:nowrap;">
+                <i class="fas fa-file-pdf"></i> Lista de invitados (PDF)
+            </a>
+            <span style="font-size:0.8rem;color:#666;">{{ $registrations->total() }} registros en total</span>
+        </div>
     </div>
 
     @if($registrations->isEmpty())
